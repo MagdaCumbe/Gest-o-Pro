@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestão Pro - Login</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<style>
+:root {
+  --primary: #4f46e5;
+  --primary-dark: #4338ca;
+  --secondary: #6b7280;
+  --bg: #f0f4f8;
+  --card: #ffffff;
+  --input-bg: #f9fafb;
+  --shadow: rgba(0,0,0,0.1);
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Segoe UI', sans-serif;
+}
+
+body{
+  background:var(--bg);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+}
+
+.container{
+  width:400px;
+  background:var(--card);
+  border-radius:25px;
+  box-shadow:0 20px 40px var(--shadow);
+  overflow:hidden;
+}
+
+.form-container{
+  padding:40px 30px;
+}
+
+.hidden{
+  display:none;
+}
+
+h2{
+  text-align:center;
+  color:var(--primary);
+  margin-bottom:30px;
+}
+
+.input-group{
+  position:relative;
+  margin-bottom:20px;
+}
+
+.input-group i{
+  position:absolute;
+  top:14px;
+  left:15px;
+  color:var(--secondary);
+}
+
+.eye-icon{
+  position:absolute;
+  right:15px;
+  top:14px;
+  cursor:pointer;
+}
+
+input{
+  width:100%;
+  padding:12px 15px 12px 40px;
+  border-radius:15px;
+  border:1px solid #ddd;
+  background:var(--input-bg);
+}
+
+input:focus{
+  outline:none;
+  border-color:var(--primary);
+}
+
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:20px;
+  background:linear-gradient(135deg,var(--primary-dark),var(--primary));
+  color:white;
+  font-weight:700;
+  cursor:pointer;
+}
+
+button:hover{
+  opacity:0.9;
+}
+
+p{
+  text-align:center;
+  margin-top:15px;
+  font-size:14px;
+}
+
+a{
+  color:var(--primary);
+  cursor:pointer;
+  font-weight:600;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<!-- LOGIN -->
+<div id="loginForm" class="form-container">
+
+<h2><i class="fa fa-lock"></i> Entrar</h2>
+
+<div class="input-group">
+<i class="fa fa-envelope"></i>
+<input type="email" id="emailLogin" placeholder="Email">
+</div>
+
+<div class="input-group">
+<i class="fa fa-key"></i>
+<input type="password" id="senhaLogin" placeholder="Senha">
+<i class="fa fa-eye eye-icon" onclick="toggleSenha('senhaLogin',this)"></i>
+</div>
+
+<button onclick="fazerLogin()">Entrar</button>
+
+<p>
+<a onclick="mostrarCadastro()">Criar conta</a> |
+<a onclick="mostrarRecuperar()">Esqueceu a senha?</a>
+</p>
+
+</div>
+
+<!-- CADASTRO -->
+<div id="cadastroForm" class="form-container hidden">
+
+<h2><i class="fa fa-user-plus"></i> Criar Conta</h2>
+
+<div class="input-group">
+<i class="fa fa-user"></i>
+<input type="text" id="nomeCadastro" placeholder="Nome">
+</div>
+
+<div class="input-group">
+<i class="fa fa-envelope"></i>
+<input type="email" id="emailCadastro" placeholder="Email">
+</div>
+
+<div class="input-group">
+<i class="fa fa-key"></i>
+<input type="password" id="senhaCadastro" placeholder="Senha">
+<i class="fa fa-eye eye-icon" onclick="toggleSenha('senhaCadastro',this)"></i>
+</div>
+
+<button onclick="criarConta()">Criar Conta</button>
+
+<p>
+<a onclick="mostrarLogin()">Já tem conta? Login</a>
+</p>
+
+</div>
+
+<!-- RECUPERAR -->
+<div id="recuperarForm" class="form-container hidden">
+
+<h2><i class="fa fa-unlock"></i> Recuperar Senha</h2>
+
+<div class="input-group">
+<i class="fa fa-envelope"></i>
+<input type="email" id="emailRecuperar" placeholder="Digite seu email">
+</div>
+
+<button onclick="recuperarSenha()">Enviar Link</button>
+
+<p>
+<a onclick="mostrarLogin()">Voltar ao Login</a>
+</p>
+
+</div>
+
+</div>
+
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore-compat.js"></script>
+
+<script>
+
+// CONFIG FIREBASE
+const firebaseConfig = {
+  apiKey: "AIzaSyDrFZ5LDIulhQlsurXs0GWP4QvJ6O2rq4A",
+  authDomain: "meu-26dbf.firebaseapp.com",
+  projectId: "meu-26dbf",
+  storageBucket: "meu-26dbf.firebasestorage.app",
+  messagingSenderId: "561029322629",
+  appId: "1:561029322629:web:7dda91ab2ff7aec60596ec"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+
+
+// CONTROLE TELAS
+
+function mostrarLogin(){
+  esconderTudo();
+  document.getElementById("loginForm").classList.remove("hidden");
+}
+
+function mostrarCadastro(){
+  esconderTudo();
+  document.getElementById("cadastroForm").classList.remove("hidden");
+}
+
+function mostrarRecuperar(){
+  esconderTudo();
+  document.getElementById("recuperarForm").classList.remove("hidden");
+}
+
+function esconderTudo(){
+  document.getElementById("loginForm").classList.add("hidden");
+  document.getElementById("cadastroForm").classList.add("hidden");
+  document.getElementById("recuperarForm").classList.add("hidden");
+}
+
+
+// MOSTRAR SENHA
+
+function toggleSenha(id,icon){
+  let input=document.getElementById(id);
+
+  if(input.type==="password"){
+    input.type="text";
+    icon.classList.replace("fa-eye","fa-eye-slash");
+  }else{
+    input.type="password";
+    icon.classList.replace("fa-eye-slash","fa-eye");
+  }
+}
+
+
+// CADASTRO
+
+function criarConta(){
+
+  let nome=document.getElementById("nomeCadastro").value.trim();
+  let email=document.getElementById("emailCadastro").value.trim();
+  let senha=document.getElementById("senhaCadastro").value;
+
+  if(!nome || !email || !senha){
+    alert("Preencha todos os campos");
+    return;
+  }
+
+  auth.createUserWithEmailAndPassword(email,senha)
+  .then(()=>{
+    alert("Conta criada com sucesso!");
+    mostrarLogin();
+  })
+  .catch(err=>{
+    alert(err.message);
+  });
+
+}
+
+
+// LOGIN
+
+function fazerLogin(){
+
+  let email=document.getElementById("emailLogin").value.trim();
+  let senha=document.getElementById("senhaLogin").value;
+
+  if(!email || !senha){
+    alert("Preencha todos os campos");
+    return;
+  }
+
+  auth.signInWithEmailAndPassword(email,senha)
+  .then(()=>{
+    window.location.href="tttt.html";
+  })
+  .catch(()=>{
+    alert("Email ou senha inválidos");
+  });
+
+}
+
+
+// RECUPERAR SENHA
+
+function recuperarSenha(){
+
+  let email=document.getElementById("emailRecuperar").value.trim();
+
+  if(!email){
+    alert("Digite seu email");
+    return;
+  }
+
+  auth.sendPasswordResetEmail(email)
+  .then(()=>{
+    alert("Link enviado para seu email!");
+    mostrarLogin();
+  })
+  .catch(err=>{
+    alert(err.message);
+  });
+
+}
+
+</script>
+
+</body>
+</html>

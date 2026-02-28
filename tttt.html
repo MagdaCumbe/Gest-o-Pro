@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestão Pro</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+:root {
+  --primary: #4f46e5;
+  --primary-light: #6366f1;
+  --green: #16a34a;
+  --red: #dc2626;
+  --bg: #f1f5f9;
+  --card: #ffffff;
+  --text: #0f172a;
+  --muted: #64748b;
+}
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', system-ui, sans-serif; }
+body { background: var(--bg); color: var(--text); padding-bottom: 120px; }
+header { padding:25px 20px 10px; }
+header h1 { font-size: 22px; }
+header p { font-size: 13px; color: var(--muted); }
+.container { padding:15px; }
+.card { background: var(--card); padding: 20px; border-radius: 22px; margin-bottom: 18px; box-shadow: 0 12px 35px rgba(0,0,0,0.05); }
+.summary { display: flex; flex-direction: column; gap: 18px; }
+.summary .box { padding: 28px; border-radius: 24px; color:white; font-size:16px; }
+.blue { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+.green { background: linear-gradient(135deg, #22c55e, #16a34a); }
+.red { background: linear-gradient(135deg, #ef4444, #dc2626); }
+.box strong { display:block; font-size:26px; margin-top:8px; }
+input, select { width:100%; padding:14px; border-radius:14px; border:1px solid #e2e8f0; margin-bottom:12px; font-size:14px; background:#f8fafc; }
+input:focus, select:focus { outline:none; border-color:var(--primary); background:white; }
+button { width:100%; padding:14px; border:none; border-radius:14px; background:var(--primary); color:white; font-weight:600; font-size:14px; cursor:pointer; transition:0.2s; }
+button:hover { background: var(--primary-light); }
+.list-item { padding:14px 0; border-bottom:1px solid #f1f5f9; display:flex; justify-content:space-between; font-size:14px; flex-wrap:wrap; }
+.navbar { position:fixed; bottom:0; width:100%; background:white; display:flex; justify-content:space-around; padding:12px 0; box-shadow:0 -5px 25px rgba(0,0,0,0.05); border-top-left-radius:20px; border-top-right-radius:20px; }
+.navbar button { background:none; color:var(--muted); font-size:12px; display:flex; flex-direction:column; align-items:center; border:none; position:relative; }
+.navbar button i { font-size:18px; margin-bottom:3px; }
+.navbar button.active { color: var(--primary); font-weight:600; }
+.hidden { display:none; }
+.badge { display:inline-block; padding:6px 10px; background:#e0e7ff; color:var(--primary); border-radius:12px; font-size:12px; margin-top:6px; }
+#fiadoExtra { display:none; margin-top:10px; }
+.navbar button[data-tooltip]:hover::after { content: attr(data-tooltip); position: absolute; bottom: 50px; font-size:11px; background:#111; color:white; padding:4px 8px; border-radius:6px; white-space:nowrap; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1 id="saudacao">Olá 👋</h1>
+  <p>Controle total do seu negócio</p>
+</header>
+
+<div class="container">
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="summary">
+    <div class="box blue">Vendas de Hoje<strong id="totalVendas">0 MT</strong></div>
+    <div class="box red">Despesas de Hoje<strong id="totalDespesas">0 MT</strong></div>
+    <div class="box green">Lucro de Hoje<strong id="lucro">0 MT</strong></div>
+    <div class="box blue">Lucro Mensal Estimado<strong id="lucroMensalTotal">0 MT</strong></div>
+    <div class="box green">Lucro Acumulado no Mês<strong id="lucroMesReal">0 MT</strong></div>
+  </div>
+</div>
+
+<!-- VENDAS -->
+<div id="vendas" class="hidden">
+  <div class="card">
+    <h3>Nova Venda</h3>
+    <input type="text" id="produto" placeholder="Produto">
+    <input type="number" id="valorVenda" placeholder="Valor (MT)">
+    <select id="pagamento" onchange="toggleFiado()">
+      <option value="Dinheiro">Dinheiro</option>
+      <option value="M-Pesa">M-Pesa</option>
+      <option value="Emola">Emola</option>
+      <option value="Fiado">Fiado</option>
+    </select>
+    <div id="fiadoExtra">
+      <input type="text" id="nomeDevedor" placeholder="Nome do devedor">
+      <input type="text" id="contatoDevedor" placeholder="Contato do devedor">
+      <input type="date" id="dataPagamento" placeholder="Data estimada de pagamento">
+    </div>
+    <button onclick="registrarVenda()">Registrar Venda</button>
+  </div>
+  <div class="card">
+    <h3>Histórico</h3>
+    <button onclick="abrirHistoricoVendas()">Histórico</button>
+    <div id="listaVendas" class="hidden"></div>
+  </div>
+</div>
+
+<!-- DESPESAS -->
+<div id="despesas" class="hidden">
+  <div class="card">
+    <h3>Nova Despesa</h3>
+    <input type="text" id="tipoDespesa" placeholder="Tipo">
+    <input type="number" id="valorDespesa" placeholder="Valor (MT)">
+    <label><input type="checkbox" id="mensalDespesa"> Mensal</label>
+    <button onclick="registrarDespesa()">Registrar Despesa</button>
+  </div>
+  <div class="card">
+    <h3>Histórico</h3>
+    <button onclick="abrirHistoricoDespesas()">Histórico</button>
+    <div id="listaDespesas" class="hidden"></div>
+  </div>
+</div>
+
+<!-- FIADO -->
+<div id="fiado" class="hidden">
+  <div class="card">
+    <h3>Fiados Pendentes</h3>
+    <div id="listaFiado"></div>
+  </div>
+</div>
+
+<!-- ESTOQUE -->
+<div id="estoque" class="hidden">
+  <div class="card">
+    <h3>Resumo do Estoque</h3>
+    <div class="summary">
+      <div class="box blue">Investimento Total<strong id="investimentoTotal">0 MT</strong></div>
+      <div class="box green">Lucro Potencial Total<strong id="lucroPotencial">0 MT</strong></div>
+      <div class="box red">Lucro Mensal Estimado<strong id="lucroMensal">0 MT</strong></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>Adicionar Produto</h3>
+    <input type="text" id="nomeProduto" placeholder="Nome do produto">
+    <select id="tipoCompra">
+      <option value="unidade">Unidade</option>
+      <option value="caixa">Caixa</option>
+      <option value="fardo">Fardo</option>
+    </select>
+    <input type="number" id="quantidadeCompra" placeholder="Quantas unidades ou caixas?">
+    <input type="number" id="quantidadePorCaixa" placeholder="Unidades por caixa (se aplicável)">
+    <input type="number" id="precoCompra" placeholder="Preço compra (unidade ou caixa)">
+    <input type="number" id="precoVenda" placeholder="Preço venda por unidade">
+    <input type="number" id="vendasMensais" placeholder="Vendas mensais estimadas (unid)">
+    <button onclick="adicionarProduto()">Adicionar Produto</button>
+  </div>
+  <div class="card">
+    <h3>Produtos no Estoque</h3>
+    <button onclick="abrirEstoqueCompleto()">Produtos no Estoque</button>
+    <div id="listaEstoque" class="hidden"></div>
+  </div>
+</div>
+
+<!-- DEFINIÇÕES -->
+<div id="definicoes" class="hidden">
+  <div class="card">
+    <h3>Perfil do Usuário</h3>
+    <input type="text" id="nomeUsuario" placeholder="Seu nome">
+    <input type="text" id="nomeNegocio" placeholder="Nome do negócio">
+    <input type="email" id="emailNegocio" placeholder="Email do negócio">
+    <button onclick="salvarPerfil()">Salvar Perfil</button>
+  </div>
+  <div class="card">
+    <h3>Plano Atual</h3>
+    <div class="badge">Plano Básico</div>
+  </div>
+</div>
+
+<!-- NOVAS TELAS -->
+<!-- Estoque Completo -->
+<div id="estoqueCompleto" class="hidden">
+  <div class="card">
+    <h3>Produtos no Estoque</h3>
+    <div id="listaEstoqueCompleto"></div>
+    <button onclick="mudarTela('estoque', null)">Voltar</button>
+  </div>
+</div>
+
+<!-- Histórico de Vendas -->
+<div id="historicoVendas" class="hidden">
+  <div class="card">
+    <h3>Histórico de Vendas</h3>
+    <div id="listaHistoricoVendas"></div>
+    <button onclick="mudarTela('vendas', null)">Voltar</button>
+  </div>
+</div>
+
+<!-- Histórico de Despesas -->
+<div id="historicoDespesas" class="hidden">
+  <div class="card">
+    <h3>Histórico de Despesas</h3>
+    <div id="listaHistoricoDespesas"></div>
+    <button onclick="mudarTela('despesas', null)">Voltar</button>
+  </div>
+</div>
+
+</div>
+
+<div class="navbar">
+  <button onclick="mudarTela('dashboard',this)" class="active" data-tooltip="Início"><i class="fa fa-home"></i>Início</button>
+  <button onclick="mudarTela('vendas',this)" data-tooltip="Vendas"><i class="fa fa-cart-plus"></i>Vendas</button>
+  <button onclick="mudarTela('despesas',this)" data-tooltip="Despesas"><i class="fa fa-money-bill"></i>Despesas</button>
+  <button onclick="mudarTela('fiado',this)" data-tooltip="Fiados"><i class="fa fa-user-clock"></i>Fiado</button>
+  <button onclick="mudarTela('estoque',this)" data-tooltip="Estoque"><i class="fa fa-boxes"></i>Estoque</button>
+  <button onclick="mudarTela('definicoes',this)" data-tooltip="Definições"><i class="fa fa-cog"></i>Definições</button>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
+<script>
+  const firebaseConfig = {
+  apiKey: "AIzaSyDrFZ5LDIulhQlsurXs0GWP4QvJ6O2rq4A",
+  authDomain: "meu-26dbf.firebaseapp.com",
+  projectId: "meu-26dbf",
+  storageBucket: "meu-26dbf.firebasestorage.app",
+  messagingSenderId: "561029322629",
+  appId: "1:561029322629:web:7dda91ab2ff7aec60596ec"
+};
+
+  firebase.initializeApp(firebaseConfig);
+
+  const db = firebase.firestore();
+  
+const auth = firebase.auth();
+
+auth.onAuthStateChanged(user => {
+  if (!user) {
+    window.location.href = "index.html";
+  } else {
+    carregarDados(user.uid);
+  }
+});
+
+
+let vendas = [];
+let despesas = [];
+let fiados = [];
+let estoque = [];
+let perfil = {nome:"Usuário", negocio:"Meu Negócio"};
+
+// ===== Funções =====
+function toggleFiado(){ 
+  document.getElementById("fiadoExtra").style.display=(document.getElementById("pagamento").value==="Fiado")?"block":"none"; 
+}
+
+function adicionarProduto(){
+  let nome = document.getElementById("nomeProduto").value;
+  let tipo = document.getElementById("tipoCompra").value;
+  let qtd = parseInt(document.getElementById("quantidadeCompra").value);
+  let qtdPorCaixa = parseInt(document.getElementById("quantidadePorCaixa").value)||1;
+  let precoCompra = parseFloat(document.getElementById("precoCompra").value);
+  let precoVenda = parseFloat(document.getElementById("precoVenda").value);
+  let vendasMensais = parseInt(document.getElementById("vendasMensais").value)||0;
+
+  if(!nome || !qtd || !precoCompra || !precoVenda){ alert("Preencha todos os campos obrigatórios!"); return; }
+
+  let precoCompraUnidade = (tipo==="caixa" || tipo==="fardo") ? precoCompra / qtdPorCaixa : precoCompra;
+  let totalUnidades = (tipo==="caixa"||tipo==="fardo") ? qtd*qtdPorCaixa : qtd;
+
+  let produto = {
+  nome,
+  tipo,
+  qtd: totalUnidades,
+  precoCompra: precoCompraUnidade,
+  precoVenda,
+  vendasMensais
+};
+
+let user = firebase.auth().currentUser;
+
+db.collection("usuarios")
+  .doc(user.uid)
+  .collection("estoque")
+  .add(produto);
+estoque.push(produto);
+  atualizarResumoEstoque();
+  alert("Produto adicionado!");
+}
+
+function toggleEstoque(){
+  const lista = document.getElementById("listaEstoque");
+  if(lista.classList.contains("hidden")){
+    atualizarListaEstoque();
+    lista.classList.remove("hidden");
+  } else {
+    lista.classList.add("hidden");
+  }
+}
+
+function toggleHistorico(tipo){
+  const div = tipo==="vendas" ? document.getElementById("listaVendas") : document.getElementById("listaDespesas");
+  if(div.classList.contains("hidden")){
+    atualizarListas();
+    div.classList.remove("hidden");
+  } else {
+    div.classList.add("hidden");
+  }
+}
+
+function atualizarListaEstoque(){
+  let html = estoque.map((p,i)=>{
+    let lucroUnidade = p.precoVenda - p.precoCompra;
+    let lucroTotal = p.qtd * lucroUnidade;
+    let lucroMensal = p.vendasMensais * lucroUnidade;
+    return `<div class="list-item">
+      ${p.nome} | ${p.qtd} unid <br>
+      Compra: ${p.precoCompra.toFixed(2)} MT | Venda: ${p.precoVenda.toFixed(2)} MT <br>
+      Lucro por unidade: ${lucroUnidade.toFixed(2)} MT <br>
+      Lucro total possível: ${lucroTotal.toFixed(2)} MT <br>
+      Lucro mensal estimado: ${lucroMensal.toFixed(2)} MT
+      <button onclick="removerProduto(${i})" style="background:red;margin-left:10px;">Remover</button>
+    </div>`;
+  }).join("");
+  document.getElementById("listaEstoque").innerHTML = html;
+}
+
+function removerProduto(i){ 
+  estoque.splice(i,1); 
+  atualizarListaEstoque(); 
+  atualizarResumoEstoque(); 
+}
+
+function atualizarResumoEstoque(){
+  let investimento = estoque.reduce((a,b)=>a+b.qtd*b.precoCompra,0);
+  let lucroPot = estoque.reduce((a,b)=>a+b.qtd*(b.precoVenda-b.precoCompra),0);
+  let lucroMensal = estoque.reduce((a,b)=>a+b.vendasMensais*(b.precoVenda-b.precoCompra),0);
+  document.getElementById("investimentoTotal").innerText = investimento.toFixed(2)+" MT";
+  document.getElementById("lucroPotencial").innerText = lucroPot.toFixed(2)+" MT";
+  document.getElementById("lucroMensal").innerText = lucroMensal.toFixed(2)+" MT";
+}
+
+// ===== Abrir telas separadas =====
+function abrirEstoqueCompleto(){
+  atualizarListaEstoqueCompleto();
+  mudarTela('estoqueCompleto', null);
+}
+
+function abrirHistoricoVendas(){
+  atualizarHistoricoVendas();
+  mudarTela('historicoVendas', null);
+}
+
+function abrirHistoricoDespesas(){
+  atualizarHistoricoDespesas();
+  mudarTela('historicoDespesas', null);
+}
+
+// ===== Atualizar listas =====
+function atualizarListaEstoqueCompleto(){
+  let html = estoque.map((p,i)=>{
+    let lucroUnidade = p.precoVenda - p.precoCompra;
+    let lucroTotal = p.qtd * lucroUnidade;
+    let lucroMensal = p.vendasMensais * lucroUnidade;
+    return `<div class="list-item">
+      ${p.nome} | ${p.qtd} unid<br>
+      Compra: ${p.precoCompra.toFixed(2)} MT | Venda: ${p.precoVenda.toFixed(2)} MT<br>
+      Lucro por unidade: ${lucroUnidade.toFixed(2)} MT<br>
+      Lucro total possível: ${lucroTotal.toFixed(2)} MT<br>
+      Lucro mensal estimado: ${lucroMensal.toFixed(2)} MT
+    </div>`;
+  }).join("");
+  document.getElementById("listaEstoqueCompleto").innerHTML = html;
+}
+
+function atualizarHistoricoVendas(){
+  let html = vendas.map(v=>{
+    return `<div class="list-item">
+      Produto: ${v.produto} | Valor: ${v.valor.toFixed(2)} MT<br>
+      Forma de Pagamento: ${v.pagamento} | Pago: ${v.pago ? "Sim" : "Não"}<br>
+      Data: ${v.data}
+      ${v.devedor ? `<br>Devedor: ${v.devedor.nome} | Contato: ${v.devedor.contato} | Data Pgto: ${v.devedor.dataPagamento}` : ""}
+    </div>`;
+  }).join("");
+  document.getElementById("listaHistoricoVendas").innerHTML = html;
+}
+
+function atualizarHistoricoDespesas(){
+  let html = despesas.map(d=>{
+    return `<div class="list-item">
+      Tipo: ${d.tipo} | Valor: ${d.valor.toFixed(2)} MT | Mensal: ${d.mensal ? "Sim" : "Não"}
+    </div>`;
+  }).join("");
+  document.getElementById("listaHistoricoDespesas").innerHTML = html;
+}
+
+// ===== Vendas =====
+function registrarVenda(){
+  let produtoNome = document.getElementById("produto").value;
+  let valor = parseFloat(document.getElementById("valorVenda").value);
+  let pagamento = document.getElementById("pagamento").value;
+  let hoje = new Date().toISOString().split("T")[0];
+  if(!produtoNome || !valor){ alert("Preencha todos os campos!"); return; }
+  let itemEstoque = estoque.find(p=>p.nome.toLowerCase()===produtoNome.toLowerCase());
+  let custo = itemEstoque ? itemEstoque.precoCompra : 0;
+  let venda = {produto:produtoNome, valor, custo, pagamento, pago:true, data:hoje};
+
+  if(pagamento==="Fiado"){
+    let nomeDevedor = document.getElementById("nomeDevedor").value;
+    let contatoDevedor = document.getElementById("contatoDevedor").value;
+    let dataPagamento = document.getElementById("dataPagamento").value;
+    if(!nomeDevedor || !contatoDevedor || !dataPagamento){ alert("Preencha dados do fiado!"); return; }
+    venda.pago = false;
+    venda.devedor = {nome:nomeDevedor, contato:contatoDevedor, dataPagamento};
+    
+  }
+
+  let user = firebase.auth().currentUser;
+
+db.collection("usuarios")
+  .doc(user.uid)
+  .collection("vendas")
+  .add(venda);
+vendas.push(venda);
+  if(itemEstoque && (pagamento!=="Fiado" || venda.pago)){ 
+    itemEstoque.qtd -=1; 
+    if(itemEstoque.qtd<0)itemEstoque.qtd=0; 
+  }
+
+  document.getElementById("produto").value="";
+  document.getElementById("valorVenda").value="";
+  document.getElementById("pagamento").value="Dinheiro";
+  toggleFiado();
+  atualizarResumo(); atualizarListas(); atualizarListaEstoque(); atualizarResumoEstoque();
+}
+
+// ===== Despesas =====
+function registrarDespesa(){
+  let tipo = document.getElementById("tipoDespesa").value;
+  let valor = parseFloat(document.getElementById("valorDespesa").value);
+  let mensal = document.getElementById("mensalDespesa").checked;
+  if(!tipo || !valor){ alert("Preencha todos os campos!"); return; }
+  let despesa = {tipo, valor, mensal};
+  let user = firebase.auth().currentUser;
+
+db.collection("usuarios")
+  .doc(user.uid)
+  .collection("despesas")
+  .add(despesa);
+  despesas.push(despesa);
+  document.getElementById("tipoDespesa").value="";
+  document.getElementById("valorDespesa").value="";
+  document.getElementById("mensalDespesa").checked=false;
+  atualizarResumo(); atualizarListas(); 
+}
+
+// ===== Listas =====
+function atualizarListas(){
+  // Vendas
+  document.getElementById("listaVendas").innerHTML = vendas.map(v=>`
+    <div class="list-item">
+      ${v.produto} <span>${v.valor.toFixed(2)} MT ${v.pagamento==="Fiado" && !v.pago ? `(Fiado)` : ""}</span>
+    </div>`).join("");
+
+  // Despesas
+  document.getElementById("listaDespesas").innerHTML = despesas.map(d=>`
+    <div class="list-item">
+      ${d.tipo} <span>${d.valor.toFixed(2)} MT ${d.mensal ? "(Mensal)" : ""}</span>
+    </div>`).join("");
+
+  // Fiados
+  document.getElementById("listaFiado").innerHTML = fiados.filter(f => !f.pago).map((f,i)=>`
+    <div class="list-item">
+      ${f.produto} - ${f.devedor.nome} <br>
+      Valor: ${f.valor.toFixed(2)} MT | Data: ${f.devedor.dataPagamento} 
+      <button onclick="marcarComoPago('${f.id}')">Pago</button>
+    </div>
+  `).join("");
+}
+
+function marcarPago(index){
+  let f = fiados[index];
+  if(confirm(`Marcar ${f.produto} de ${f.devedor.nome} como pago?`)){
+    f.pago = true;
+    let itemEstoque = estoque.find(p=>p.nome.toLowerCase()===f.produto.toLowerCase());
+    if(itemEstoque) itemEstoque.qtd -= 1;
+    atualizarListas(); atualizarResumo(); atualizarListaEstoque(); atualizarResumoEstoque();
+  }
+}
+
+// ===== Resumos =====
+function atualizarResumo(){
+  let hoje = new Date().toISOString().split("T")[0];
+  let vendasHoje = vendas.filter(v => v.data===hoje && (v.pagamento!=="Fiado"||v.pago));
+  let totalVendasHoje = vendasHoje.reduce((a,b)=>a+b.valor,0);
+  let lucroHoje = vendasHoje.reduce((total,v)=>total+(v.valor-(v.custo||0)),0);
+  let totalDespesasHoje = despesas.reduce((a,b)=>a+b.valor,0);
+  document.getElementById("totalVendas").innerText = totalVendasHoje.toFixed(2)+" MT";
+  document.getElementById("totalDespesas").innerText = totalDespesasHoje.toFixed(2)+" MT";
+  document.getElementById("lucro").innerText = (lucroHoje - totalDespesasHoje).toFixed(2)+" MT";
+  atualizarLucroMensal(); calcularLucroMensalReal();
+}
+
+function atualizarLucroMensal(){
+  let totalV = vendas.filter(v=>v.pagamento!=="Fiado"||v.pago).reduce((a,b)=>a+b.valor,0);
+  let totalD = despesas.filter(d=>d.mensal).reduce((a,b)=>a+b.valor,0);
+  document.getElementById("lucroMensalTotal").innerText = (totalV-totalD).toFixed(2)+" MT";
+}
+
+function calcularLucroMensalReal(){
+  let agora = new Date();
+  let mesAtual = agora.getMonth();
+  let anoAtual = agora.getFullYear();
+  let vendasMes = vendas.filter(v=>{
+    if(!v.data) return false;
+    let d = new Date(v.data);
+    return d.getMonth()===mesAtual && d.getFullYear()===anoAtual && (v.pagamento!=="Fiado"||v.pago);
+  });
+  let lucroMes = vendasMes.reduce((total,v)=>total+(v.valor-(v.custo||0)),0);
+  document.getElementById("lucroMesReal").innerText = lucroMes.toFixed(2)+" MT";
+}
+
+// ===== Perfil =====
+function salvarPerfil(){
+  let user = firebase.auth().currentUser;
+
+  perfil.nome = document.getElementById("nomeUsuario").value || perfil.nome;
+  perfil.negocio = document.getElementById("nomeNegocio").value || perfil.negocio;
+  perfil.email = document.getElementById("emailNegocio").value || perfil.email || "";
+
+  db.collection("usuarios")
+    .doc(user.uid)
+    .set({
+      perfil: perfil
+    }, { merge: true });
+
+  atualizarSaudacao();
+  alert("Perfil atualizado!");
+}
+
+function atualizarSaudacao(){
+  document.getElementById("saudacao").innerText = "Olá, " + perfil.nome + " 👋";
+}
+
+// ===== Navegação =====
+function mudarTela(tela, btn){
+  document.querySelectorAll(".container > div").forEach(div => div.classList.add("hidden"));
+  document.getElementById(tela).classList.remove("hidden");
+  document.querySelectorAll(".navbar button").forEach(b => b.classList.remove("active"));
+  if(btn) btn.classList.add("active");
+}
+
+// ===== Inicialização =====
+function inicializarPerfil(){
+  document.getElementById("nomeUsuario").value = perfil.nome || "";
+  document.getElementById("nomeNegocio").value = perfil.negocio || "";
+  document.getElementById("emailNegocio").value = perfil.email || "";
+}
+
+function carregarDados(uid) {
+
+  // VENDAS
+  db.collection("usuarios")
+  .doc(uid)
+  .collection("vendas")
+  .get()
+  .then(snapshot => {
+    vendas = [];
+    snapshot.forEach(doc => {
+      vendas.push({ id: doc.id, ...doc.data() });
+    });
+
+    // ✅ AQUI DENTRO
+    fiados = vendas.filter(v => v.pagamento === "Fiado" && !v.pago);
+
+    atualizarResumo();
+    atualizarListas();
+  });
+
+  // DESPESAS
+  db.collection("usuarios")
+    .doc(uid)
+    .collection("despesas")
+    .get()
+    .then(snapshot => {
+      despesas = [];
+      snapshot.forEach(doc => {
+        despesas.push(doc.data());
+      });
+    });
+
+  // ESTOQUE
+  db.collection("usuarios")
+    .doc(uid)
+    .collection("estoque")
+    .get()
+    .then(snapshot => {
+      estoque = [];
+      snapshot.forEach(doc => {
+  estoque.push({ id: doc.id, ...doc.data() });
+});
+      atualizarResumoEstoque();
+    });
+
+db.collection("usuarios")
+  .doc(uid)
+  .get()
+  .then(doc => {
+    if (doc.exists && doc.data().perfil) {
+      perfil = doc.data().perfil;
+      atualizarSaudacao();
+      inicializarPerfil();
+    }
+  });
+}
+
+async function marcarComoPago(id) {
+  let user = auth.currentUser;
+  if (!user) return;
+
+  await db.collection("usuarios")
+    .doc(user.uid)
+    .collection("vendas")
+    .doc(id)
+    .update({
+      pago: true
+    });
+
+  carregarDados(user.uid);
+}
+</script>
+</body>
+</html> 

@@ -259,6 +259,7 @@ function adicionarProduto(){
   nome,
   tipo,
   qtd: totalUnidades,
+  qtdInicial: totalUnidades,
   precoCompra: precoCompraUnidade,
   precoVenda,
   vendasMensais
@@ -266,10 +267,15 @@ function adicionarProduto(){
 
 let user = firebase.auth().currentUser;
 
-db.collection("usuarios")
+let ref = db.collection("usuarios")
   .doc(user.uid)
   .collection("estoque")
-  .add(produto);
+  .doc();
+
+produto.id = ref.id;
+
+ref.set(produto);
+
 estoque.push(produto);
   atualizarResumoEstoque();
   alert("Produto adicionado!");
@@ -298,33 +304,74 @@ function toggleHistorico(tipo){
 function atualizarListaEstoque(){
   let html = estoque.map((p,i)=>{
     let lucroUnidade = p.precoVenda - p.precoCompra;
-    let lucroTotal = p.qtd * lucroUnidade;
+    let lucroTotal = p.qtdInicial * lucroUnidade;
     let lucroMensal = p.vendasMensais * lucroUnidade;
+    let investimentoProduto = p.qtdInicial * p.precoCompra;
+
     return `<div class="list-item">
-      ${p.nome} | ${p.qtd} unid <br>
-      Compra: ${p.precoCompra.toFixed(2)} MT | Venda: ${p.precoVenda.toFixed(2)} MT <br>
+      ${p.nome} | ${p.qtd} unidades disponíveis <br>
+
+      Investimento no produto: ${investimentoProduto.toFixed(2)} MT <br>
+
+      Compra: ${p.precoCompra.toFixed(2)} MT |
+      Venda: ${p.precoVenda.toFixed(2)} MT <br>
+
       Lucro por unidade: ${lucroUnidade.toFixed(2)} MT <br>
+
       Lucro total possível: ${lucroTotal.toFixed(2)} MT <br>
+
       Lucro mensal estimado: ${lucroMensal.toFixed(2)} MT
-      <button onclick="removerProduto(${i})" style="background:red;margin-left:10px;">Remover</button>
+
+      <button onclick="removerProduto(${i})"
+      style="background:red;margin-left:10px;">Remover</button>
     </div>`;
   }).join("");
+
   document.getElementById("listaEstoque").innerHTML = html;
 }
 
-function removerProduto(i){ 
-  estoque.splice(i,1); 
-  atualizarListaEstoque(); 
-  atualizarResumoEstoque(); 
+async function removerProduto(i){
+
+  let user = auth.currentUser;
+  let produto = estoque[i];
+
+  await db.collection("usuarios")
+    .doc(user.uid)
+    .collection("estoque")
+    .doc(produto.id)
+    .delete();
+
+  estoque.splice(i,1);
+
+  atualizarListaEstoque();
+  atualizarResumoEstoque();
 }
 
 function atualizarResumoEstoque(){
-  let investimento = estoque.reduce((a,b)=>a+b.qtd*b.precoCompra,0);
-  let lucroPot = estoque.reduce((a,b)=>a+b.qtd*(b.precoVenda-b.precoCompra),0);
-  let lucroMensal = estoque.reduce((a,b)=>a+b.vendasMensais*(b.precoVenda-b.precoCompra),0);
-  document.getElementById("investimentoTotal").innerText = investimento.toFixed(2)+" MT";
-  document.getElementById("lucroPotencial").innerText = lucroPot.toFixed(2)+" MT";
-  document.getElementById("lucroMensal").innerText = lucroMensal.toFixed(2)+" MT";
+
+  let investimento = estoque.reduce((a,b)=>a+(b.qtdInicial*b.precoCompra),0);
+
+  let lucroPot = estoque.reduce((a,b)=>a+(b.qtdInicial*(b.precoVenda-b.precoCompra)),0);
+
+  let lucroMensalProdutos = estoque.reduce((a,b)=>a+(b.vendasMensais*(b.precoVenda-b.precoCompra)),0);
+
+  let despesasMensais = despesas
+    .filter(d=>d.mensal)
+    .reduce((a,b)=>a+b.valor,0);
+
+  let lucroMensal = lucroMensalProdutos - despesasMensais;
+
+  let totalProdutos = estoque.reduce((a,b)=>a+b.qtd,0);
+
+  document.getElementById("investimentoTotal").innerText =
+    investimento.toFixed(2)+" MT";
+
+  document.getElementById("lucroPotencial").innerText =
+    lucroPot.toFixed(2)+" MT";
+
+  document.getElementById("lucroMensal").innerText =
+    lucroMensal.toFixed(2)+" MT";
+
 }
 
 // ===== Abrir telas separadas =====
@@ -345,18 +392,32 @@ function abrirHistoricoDespesas(){
 
 // ===== Atualizar listas =====
 function atualizarListaEstoqueCompleto(){
-  let html = estoque.map((p,i)=>{
+  let html = estoque.map((p)=>{
+
     let lucroUnidade = p.precoVenda - p.precoCompra;
-    let lucroTotal = p.qtd * lucroUnidade;
+    let lucroTotal = p.qtdInicial * lucroUnidade;
     let lucroMensal = p.vendasMensais * lucroUnidade;
+    let investimentoProduto = p.qtdInicial * p.precoCompra;
+
     return `<div class="list-item">
-      ${p.nome} | ${p.qtd} unid<br>
-      Compra: ${p.precoCompra.toFixed(2)} MT | Venda: ${p.precoVenda.toFixed(2)} MT<br>
-      Lucro por unidade: ${lucroUnidade.toFixed(2)} MT<br>
-      Lucro total possível: ${lucroTotal.toFixed(2)} MT<br>
+
+      ${p.nome} | ${p.qtd} unidades disponíveis <br>
+
+      Investimento no produto: ${investimentoProduto.toFixed(2)} MT <br>
+
+      Compra: ${p.precoCompra.toFixed(2)} MT |
+      Venda: ${p.precoVenda.toFixed(2)} MT <br>
+
+      Lucro por unidade: ${lucroUnidade.toFixed(2)} MT <br>
+
+      Lucro total possível: ${lucroTotal.toFixed(2)} MT <br>
+
       Lucro mensal estimado: ${lucroMensal.toFixed(2)} MT
+
     </div>`;
+
   }).join("");
+
   document.getElementById("listaEstoqueCompleto").innerHTML = html;
 }
 
@@ -380,6 +441,7 @@ function atualizarHistoricoDespesas(){
   }).join("");
   document.getElementById("listaHistoricoDespesas").innerHTML = html;
 }
+
 
 // ===== Vendas =====
 function registrarVenda(){
@@ -409,10 +471,28 @@ db.collection("usuarios")
   .collection("vendas")
   .add(venda);
 vendas.push(venda);
+if(pagamento === "Fiado"){
+  fiados.push(venda);
+}
   if(itemEstoque && (pagamento!=="Fiado" || venda.pago)){ 
-    itemEstoque.qtd -=1; 
-    if(itemEstoque.qtd<0)itemEstoque.qtd=0; 
+
+  itemEstoque.qtd -= 1;
+
+  if(itemEstoque.qtd < 0){
+    itemEstoque.qtd = 0;
   }
+
+  let user = firebase.auth().currentUser;
+
+  db.collection("usuarios")
+    .doc(user.uid)
+    .collection("estoque")
+    .doc(itemEstoque.id)
+    .update({
+      qtd: itemEstoque.qtd
+    });
+
+}
 
   document.getElementById("produto").value="";
   document.getElementById("valorVenda").value="";
@@ -443,6 +523,7 @@ db.collection("usuarios")
 
 // ===== Listas =====
 function atualizarListas(){
+  fiados = vendas.filter(v => v.pagamento === "Fiado");
   // Vendas
   document.getElementById("listaVendas").innerHTML = vendas.map(v=>`
     <div class="list-item">
@@ -463,17 +544,10 @@ function atualizarListas(){
       <button onclick="marcarComoPago('${f.id}')">Pago</button>
     </div>
   `).join("");
+
 }
 
-function marcarPago(index){
-  let f = fiados[index];
-  if(confirm(`Marcar ${f.produto} de ${f.devedor.nome} como pago?`)){
-    f.pago = true;
-    let itemEstoque = estoque.find(p=>p.nome.toLowerCase()===f.produto.toLowerCase());
-    if(itemEstoque) itemEstoque.qtd -= 1;
-    atualizarListas(); atualizarResumo(); atualizarListaEstoque(); atualizarResumoEstoque();
-  }
-}
+
 
 // ===== Resumos =====
 function atualizarResumo(){
@@ -489,9 +563,22 @@ function atualizarResumo(){
 }
 
 function atualizarLucroMensal(){
-  let totalV = vendas.filter(v=>v.pagamento!=="Fiado"||v.pago).reduce((a,b)=>a+b.valor,0);
-  let totalD = despesas.filter(d=>d.mensal).reduce((a,b)=>a+b.valor,0);
-  document.getElementById("lucroMensalTotal").innerText = (totalV-totalD).toFixed(2)+" MT";
+
+  // lucro mensal estimado pelos produtos
+  let lucroMensalProdutos = estoque.reduce((a,b)=>{
+    let lucroUnidade = b.precoVenda - b.precoCompra;
+    return a + (b.vendasMensais * lucroUnidade);
+  },0);
+
+  // despesas mensais
+  let despesasMensais = despesas
+    .filter(d=>d.mensal)
+    .reduce((a,b)=>a+b.valor,0);
+
+  let lucroFinal = lucroMensalProdutos - despesasMensais;
+
+  document.getElementById("lucroMensalTotal").innerText =
+    lucroFinal.toFixed(2)+" MT";
 }
 
 function calcularLucroMensalReal(){

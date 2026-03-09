@@ -631,62 +631,36 @@ function inicializarPerfil(){
   document.getElementById("emailNegocio").value = perfil.email || "";
 }
 
-function carregarDados(uid) {
+async function carregarDados(uid) {
+  const userRef = db.collection("usuarios").doc(uid);
 
-  // VENDAS
-  db.collection("usuarios")
-  .doc(uid)
-  .collection("vendas")
-  .get()
-  .then(snapshot => {
-    vendas = [];
-    snapshot.forEach(doc => {
-      vendas.push({ id: doc.id, ...doc.data() });
-    });
+  // Vendas
+  const vendasSnap = await userRef.collection("vendas").get();
+  vendas = vendasSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-    // ✅ AQUI DENTRO
-    fiados = vendas.filter(v => v.pagamento === "Fiado" && !v.pago);
+  // Despesas
+  const despesasSnap = await userRef.collection("despesas").get();
+  despesas = despesasSnap.docs.map(doc => doc.data());
 
-    atualizarResumo();
-    atualizarListas();
-  });
+  // Estoque
+  const estoqueSnap = await userRef.collection("estoque").get();
+  estoque = estoqueSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-  // DESPESAS
-  db.collection("usuarios")
-    .doc(uid)
-    .collection("despesas")
-    .get()
-    .then(snapshot => {
-      despesas = [];
-      snapshot.forEach(doc => {
-        despesas.push(doc.data());
-      });
-    });
+  // Perfil
+  const perfilDoc = await userRef.get();
+  if (perfilDoc.exists && perfilDoc.data().perfil) {
+    perfil = perfilDoc.data().perfil;
+  }
 
-  // ESTOQUE
-  db.collection("usuarios")
-    .doc(uid)
-    .collection("estoque")
-    .get()
-    .then(snapshot => {
-      estoque = [];
-      snapshot.forEach(doc => {
-  estoque.push({ id: doc.id, ...doc.data() });
-});
-      atualizarResumoEstoque();
-    });
+  fiados = vendas.filter(v => v.pagamento === "Fiado" && !v.pago);
 
-db.collection("usuarios")
-  .doc(uid)
-  .get()
-  .then(doc => {
-    if (doc.exists && doc.data().perfil) {
-      perfil = doc.data().perfil;
-      atualizarSaudacao();
-      inicializarPerfil();
-    }
-  });
-}
+  // Atualizar interface
+  atualizarResumo();
+  atualizarListas();
+  atualizarResumoEstoque();
+  atualizarSaudacao();
+  inicializarPerfil();
+  }
 
 async function marcarComoPago(id) {
   let user = auth.currentUser;

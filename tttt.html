@@ -466,10 +466,14 @@ function registrarVenda(){
 
   let user = firebase.auth().currentUser;
 
-db.collection("usuarios")
+let ref = db.collection("usuarios")
   .doc(user.uid)
   .collection("vendas")
-  .add(venda);
+  .doc();
+
+venda.id = ref.id;
+
+ref.set(venda);
 vendas.push(venda);
 if(pagamento === "Fiado"){
   fiados.push(venda);
@@ -636,11 +640,10 @@ async function carregarDados(uid) {
 
   // Vendas
   const vendasSnap = await userRef.collection("vendas").get();
-  vendas = vendasSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+vendas = vendasSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-  // Despesas
-  const despesasSnap = await userRef.collection("despesas").get();
-  despesas = despesasSnap.docs.map(doc => doc.data());
+const despesasSnap = await userRef.collection("despesas").get();
+despesas = despesasSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
   // Estoque
   const estoqueSnap = await userRef.collection("estoque").get();

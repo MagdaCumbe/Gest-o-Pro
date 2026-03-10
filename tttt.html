@@ -221,12 +221,15 @@ button:hover { background: var(--primary-light); }
   
 const auth = firebase.auth();
 
-auth.onAuthStateChanged(user => {
+auth.onAuthStateChanged(async user => {
+
   if (!user) {
     window.location.href = "index.html";
-  } else {
-    carregarDados(user.uid);
+    return;
   }
+
+  await carregarDados(user.uid);
+
 });
 
 
@@ -636,11 +639,19 @@ function inicializarPerfil(){
 }
 
 async function carregarDados(uid) {
+  vendas = [];
+despesas = [];
+estoque = [];
+fiados = [];
   const userRef = db.collection("usuarios").doc(uid);
 
   // Vendas
-  const vendasSnap = await userRef.collection("vendas").get();
-vendas = vendasSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  userRef.collection("vendas")
+.onSnapshot(snapshot => {
+  vendas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  atualizarResumo();
+  atualizarListas();
+});
 
 const despesasSnap = await userRef.collection("despesas").get();
 despesas = despesasSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));

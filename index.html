@@ -4,108 +4,441 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gestão Pro - Login</title>
-
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
 <style>
 :root {
-  --primary: #4f46e5;
-  --primary-dark: #4338ca;
-  --secondary: #6b7280;
-  --bg: #f0f4f8;
-  --card: #ffffff;
-  --input-bg: #f9fafb;
-  --shadow: rgba(0,0,0,0.1);
+  --accent: #f97316;
+  --green: #10b981;
+  --red: #f43f5e;
+  --bg: #0a0f1e;
+  --surface: #111827;
+  --surface2: #1a2234;
+  --border: rgba(255,255,255,0.07);
+  --text: #f1f5f9;
+  --muted: #64748b;
+  --muted2: #94a3b8;
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow: hidden;
+}
+/* Ambient glows */
+body::before {
+  content: '';
+  position: fixed;
+  top: -200px; left: -150px;
+  width: 550px; height: 550px;
+  background: radial-gradient(circle, rgba(249,115,22,0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+body::after {
+  content: '';
+  position: fixed;
+  bottom: -150px; right: -150px;
+  width: 450px; height: 450px;
+  background: radial-gradient(circle, rgba(59,130,246,0.07) 0%, transparent 70%);
+  pointer-events: none;
 }
 
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:'Segoe UI', sans-serif;
+/* ===== CARD ===== */
+.card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 40px 32px 36px;
+  position: relative;
+  overflow: hidden;
+  animation: fadeUp 0.35s ease;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(249,115,22,0.5), transparent);
 }
 
-body{
-  background:var(--bg);
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  min-height:100vh;
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-.container{
-  width:400px;
-  background:var(--card);
-  border-radius:25px;
-  box-shadow:0 20px 40px var(--shadow);
-  overflow:hidden;
+/* ===== LOGO ===== */
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 32px;
+}
+.logo-icon {
+  width: 52px; height: 52px;
+  background: linear-gradient(135deg, var(--accent), #f43f5e);
+  border-radius: 16px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 18px;
+  color: white;
+  box-shadow: 0 0 28px rgba(249,115,22,0.35);
+}
+.logo-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.4px;
+}
+.logo-title span { color: var(--accent); }
+.logo-sub {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+  margin-top: -4px;
 }
 
-.form-container{
-  padding:40px 30px;
+/* ===== SCREEN TITLE ===== */
+.screen-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 22px;
+  letter-spacing: -0.3px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.screen-title i { color: var(--accent); font-size: 16px; }
+
+/* ===== FORM ===== */
+.form-group { margin-bottom: 14px; }
+.form-group label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--muted2);
+  margin-bottom: 6px;
+  display: block;
+}
+.input-wrap {
+  position: relative;
+}
+.input-wrap i.field-icon {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 13px;
+  pointer-events: none;
+}
+.input-wrap i.eye-icon {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  font-size: 13px;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.input-wrap i.eye-icon:hover { color: var(--accent); }
+input {
+  width: 100%;
+  padding: 13px 16px 13px 40px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 14px;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+input::placeholder { color: var(--muted); }
+input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(249,115,22,0.12);
+  background: #1e2a3a;
 }
 
-.hidden{
-  display:none;
+/* ===== BUTTON ===== */
+.btn {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent), #ea580c);
+  color: white;
+  box-shadow: 0 4px 18px rgba(249,115,22,0.35);
+}
+.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(249,115,22,0.45); }
+.btn-primary:active { transform: translateY(0); }
+
+/* ===== LINKS ===== */
+.links {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 2;
+}
+.links a {
+  color: var(--accent);
+  cursor: pointer;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.links a:hover { opacity: 0.8; }
+.links .sep { color: var(--border); margin: 0 6px; }
+
+/* ===== DIVIDER ===== */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 20px 0;
 }
 
-h2{
-  text-align:center;
-  color:var(--primary);
-  margin-bottom:30px;
+/* ===== TOAST ===== */
+#toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(16px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 11px 22px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 0;
+  transition: all 0.3s;
+  z-index: 9999;
+  white-space: nowrap;
+  pointer-events: none;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+#toast.success { border-color: rgba(16,185,129,0.4); color: var(--green); }
+#toast.error { border-color: rgba(244,63,94,0.4); color: var(--red); }
+
+/* ===== HIDDEN ===== */
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="card">
+
+  <!-- Branding -->
+  <div class="logo">
+    <div class="logo-icon">GP</div>
+    <div class="logo-title">Gestão <span>Pro</span></div>
+    <p class="logo-sub">Controle total do seu negócio</p>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="loginForm">
+    <div class="screen-title"><i class="fa fa-lock"></i> Entrar na conta</div>
+
+    <div class="form-group">
+      <label>Email</label>
+      <div class="input-wrap">
+        <i class="fa fa-envelope field-icon"></i>
+        <input type="email" id="emailLogin" placeholder="seu@email.com">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Senha</label>
+      <div class="input-wrap">
+        <i class="fa fa-key field-icon"></i>
+        <input type="password" id="senhaLogin" placeholder="••••••••">
+        <i class="fa fa-eye eye-icon" onclick="toggleSenha('senhaLogin', this)"></i>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="fazerLogin()">
+      <i class="fa fa-arrow-right-to-bracket"></i> Entrar
+    </button>
+
+    <div class="links">
+      <a onclick="mostrarCadastro()">Criar conta</a>
+      <span class="sep">|</span>
+      <a onclick="mostrarRecuperar()">Esqueceu a senha?</a>
+    </div>
+  </div>
+
+  <!-- CADASTRO -->
+  <div id="cadastroForm" class="hidden">
+    <div class="screen-title"><i class="fa fa-user-plus"></i> Criar conta</div>
+
+    <div class="form-group">
+      <label>Nome</label>
+      <div class="input-wrap">
+        <i class="fa fa-user field-icon"></i>
+        <input type="text" id="nomeCadastro" placeholder="Seu nome completo">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Email</label>
+      <div class="input-wrap">
+        <i class="fa fa-envelope field-icon"></i>
+        <input type="email" id="emailCadastro" placeholder="seu@email.com">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Senha</label>
+      <div class="input-wrap">
+        <i class="fa fa-key field-icon"></i>
+        <input type="password" id="senhaCadastro" placeholder="Mínimo 6 caracteres">
+        <i class="fa fa-eye eye-icon" onclick="toggleSenha('senhaCadastro', this)"></i>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="criarConta()">
+      <i class="fa fa-check"></i> Criar Conta
+    </button>
+
+    <div class="links">
+      <a onclick="mostrarLogin()">← Já tenho conta</a>
+    </div>
+  </div>
+
+  <!-- RECUPERAR -->
+  <div id="recuperarForm" class="hidden">
+    <div class="screen-title"><i class="fa fa-unlock-keyhole"></i> Recuperar senha</div>
+
+    <p style="font-size:13px;color:var(--muted);margin-bottom:18px;line-height:1.6;">
+      Insira o seu email e enviaremos um link para redefinir a senha.
+    </p>
+
+    <div class="form-group">
+      <label>Email</label>
+      <div class="input-wrap">
+        <i class="fa fa-envelope field-icon"></i>
+        <input type="email" id="emailRecuperar" placeholder="seu@email.com">
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="recuperarSenha()">
+      <i class="fa fa-paper-plane"></i> Enviar Link
+    </button>
+
+    <div class="links">
+      <a onclick="mostrarLogin()">← Voltar ao login</a>
+    </div>
+  </div>
+
+</div>
+
+<div id="toast"></div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDrFZ5LDIulhQlsurXs0GWP4QvJ6O2rq4A",
+  authDomain: "meu-26dbf.firebaseapp.com",
+  projectId: "meu-26dbf",
+  storageBucket: "meu-26dbf.firebasestorage.app",
+  messagingSenderId: "561029322629",
+  appId: "1:561029322629:web:7dda91ab2ff7aec60596ec"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+// ===== TOAST =====
+function showToast(msg, type='success'){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show ' + type;
+  setTimeout(()=>{ t.className = ''; }, 3000);
 }
 
-.input-group{
-  position:relative;
-  margin-bottom:20px;
+// ===== NAVEGAÇÃO =====
+function mostrarLogin(){ esconderTudo(); document.getElementById("loginForm").classList.remove("hidden"); }
+function mostrarCadastro(){ esconderTudo(); document.getElementById("cadastroForm").classList.remove("hidden"); }
+function mostrarRecuperar(){ esconderTudo(); document.getElementById("recuperarForm").classList.remove("hidden"); }
+function esconderTudo(){
+  ["loginForm","cadastroForm","recuperarForm"].forEach(id=>document.getElementById(id).classList.add("hidden"));
 }
 
-.input-group i{
-  position:absolute;
-  top:14px;
-  left:15px;
-  color:var(--secondary);
+// ===== TOGGLE SENHA =====
+function toggleSenha(id, icon){
+  const input = document.getElementById(id);
+  const isHidden = input.type === "password";
+  input.type = isHidden ? "text" : "password";
+  icon.classList.toggle("fa-eye", !isHidden);
+  icon.classList.toggle("fa-eye-slash", isHidden);
 }
 
-.eye-icon{
-  position:absolute;
-  right:15px;
-  top:14px;
-  cursor:pointer;
+// ===== CADASTRO =====
+function criarConta(){
+  const nome  = document.getElementById("nomeCadastro").value.trim();
+  const email = document.getElementById("emailCadastro").value.trim();
+  const senha = document.getElementById("senhaCadastro").value;
+  if(!nome||!email||!senha){ showToast("Preencha todos os campos", "error"); return; }
+  auth.createUserWithEmailAndPassword(email, senha)
+    .then(()=>{ showToast("✓ Conta criada com sucesso!"); setTimeout(mostrarLogin, 1500); })
+    .catch(err=>{ showToast(err.message, "error"); });
 }
 
-input{
-  width:100%;
-  padding:12px 15px 12px 40px;
-  border-radius:15px;
-  border:1px solid #ddd;
-  background:var(--input-bg);
+// ===== LOGIN =====
+function fazerLogin(){
+  const email = document.getElementById("emailLogin").value.trim();
+  const senha = document.getElementById("senhaLogin").value;
+  if(!email||!senha){ showToast("Preencha todos os campos", "error"); return; }
+  auth.signInWithEmailAndPassword(email, senha)
+    .then(()=>{ window.location.href = "tttt.html"; })
+    .catch(()=>{ showToast("Email ou senha inválidos", "error"); });
 }
 
-input:focus{
-  outline:none;
-  border-color:var(--primary);
+// ===== RECUPERAR =====
+function recuperarSenha(){
+  const email = document.getElementById("emailRecuperar").value.trim();
+  if(!email){ showToast("Digite o seu email", "error"); return; }
+  auth.sendPasswordResetEmail(email)
+    .then(()=>{ showToast("✓ Link enviado para o seu email!"); setTimeout(mostrarLogin, 2000); })
+    .catch(err=>{ showToast(err.message, "error"); });
 }
-
-button{
-  width:100%;
-  padding:14px;
-  border:none;
-  border-radius:20px;
-  background:linear-gradient(135deg,var(--primary-dark),var(--primary));
-  color:white;
-  font-weight:700;
-  cursor:pointer;
-}
-
-button:hover{
-  opacity:0.9;
-}
-
-p{
-  text-align:center;
-  margin-top:15px;
-  font-size:14px;
+</script>
+</body>
+</html>
 }
 
 a{

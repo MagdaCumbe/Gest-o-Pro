@@ -436,7 +436,7 @@ async function fazerLogin(){
   if(!email||!senha){ showToast("Preencha todos os campos", "error"); return; }
   try {
     await auth.signInWithEmailAndPassword(email, senha);
-    window.location.href = "gestao-pro.html";
+    window.location.href = "tttt.html";
   } catch(err){
     const msg = err.code === "auth/wrong-password" || err.code === "auth/user-not-found"
       ? "Email ou senha inválidos" : err.message;

@@ -477,7 +477,6 @@ let ref = db.collection("usuarios")
 venda.id = ref.id;
 
 ref.set(venda);
-vendas.push(venda);
 if(pagamento === "Fiado"){
   fiados.push(venda);
 }
@@ -676,15 +675,7 @@ async function carregarDados(uid) {
   atualizarSaudacao();
   inicializarPerfil();
   }
-  fiados = vendas.filter(v => v.pagamento === "Fiado" && !v.pago);
 
-  // Atualizar interface
-  atualizarResumo();
-  atualizarListas();
-  atualizarResumoEstoque();
-  atualizarSaudacao();
-  inicializarPerfil();
-  }
 
 async function marcarComoPago(id) {
   let user = auth.currentUser;

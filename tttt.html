@@ -521,7 +521,6 @@ db.collection("usuarios")
   .doc(user.uid)
   .collection("despesas")
   .add(despesa);
-  despesas.push(despesa);
   document.getElementById("tipoDespesa").value="";
   document.getElementById("valorDespesa").value="";
   document.getElementById("mensalDespesa").checked=false;
@@ -639,33 +638,44 @@ function inicializarPerfil(){
 }
 
 async function carregarDados(uid) {
-  vendas = [];
-despesas = [];
-estoque = [];
-fiados = [];
+
   const userRef = db.collection("usuarios").doc(uid);
 
   // Vendas
   userRef.collection("vendas")
-.onSnapshot(snapshot => {
-  vendas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-  atualizarResumo();
-  atualizarListas();
-});
+  .onSnapshot(snapshot => {
+    vendas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    atualizarResumo();
+    atualizarListas();
+  });
 
-const despesasSnap = await userRef.collection("despesas").get();
-despesas = despesasSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  // Despesas
+  userRef.collection("despesas")
+  .onSnapshot(snapshot => {
+    despesas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    atualizarResumo();
+    atualizarListas();
+    atualizarResumoEstoque();
+  });
 
   // Estoque
-  const estoqueSnap = await userRef.collection("estoque").get();
-  estoque = estoqueSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+  userRef.collection("estoque")
+  .onSnapshot(snapshot => {
+    estoque = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    atualizarResumoEstoque();
+    atualizarListaEstoque();
+  });
 
   // Perfil
   const perfilDoc = await userRef.get();
+
   if (perfilDoc.exists && perfilDoc.data().perfil) {
     perfil = perfilDoc.data().perfil;
   }
 
+  atualizarSaudacao();
+  inicializarPerfil();
+  }
   fiados = vendas.filter(v => v.pagamento === "Fiado" && !v.pago);
 
   // Atualizar interface

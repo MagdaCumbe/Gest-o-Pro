@@ -408,33 +408,53 @@ function toggleSenha(id, icon){
 }
 
 // ===== CADASTRO =====
-function criarConta(){
+async function criarConta(){
   const nome  = document.getElementById("nomeCadastro").value.trim();
   const email = document.getElementById("emailCadastro").value.trim();
   const senha = document.getElementById("senhaCadastro").value;
   if(!nome||!email||!senha){ showToast("Preencha todos os campos", "error"); return; }
-  auth.createUserWithEmailAndPassword(email, senha)
-    .then(()=>{ showToast("✓ Conta criada com sucesso!"); setTimeout(mostrarLogin, 1500); })
-    .catch(err=>{ showToast(err.message, "error"); });
+  try {
+    const cred = await auth.createUserWithEmailAndPassword(email, senha);
+    // Guarda o nome no Firebase Auth
+    await cred.user.updateProfile({ displayName: nome });
+    // Guarda o perfil no Firestore para o app principal usar
+    const db = firebase.firestore();
+    await db.collection("usuarios").doc(cred.user.uid).set({
+      perfil: { nome, negocio: "", email }
+    }, { merge: true });
+    showToast("✓ Conta criada com sucesso!");
+    setTimeout(mostrarLogin, 1500);
+  } catch(err){
+    showToast(err.message, "error");
+  }
 }
 
 // ===== LOGIN =====
-function fazerLogin(){
+async function fazerLogin(){
   const email = document.getElementById("emailLogin").value.trim();
   const senha = document.getElementById("senhaLogin").value;
   if(!email||!senha){ showToast("Preencha todos os campos", "error"); return; }
-  auth.signInWithEmailAndPassword(email, senha)
-    .then(()=>{ window.location.href = "tttt.html"; })
-    .catch(()=>{ showToast("Email ou senha inválidos", "error"); });
+  try {
+    await auth.signInWithEmailAndPassword(email, senha);
+    window.location.href = "gestao-pro.html";
+  } catch(err){
+    const msg = err.code === "auth/wrong-password" || err.code === "auth/user-not-found"
+      ? "Email ou senha inválidos" : err.message;
+    showToast(msg, "error");
+  }
 }
 
 // ===== RECUPERAR =====
-function recuperarSenha(){
+async function recuperarSenha(){
   const email = document.getElementById("emailRecuperar").value.trim();
   if(!email){ showToast("Digite o seu email", "error"); return; }
-  auth.sendPasswordResetEmail(email)
-    .then(()=>{ showToast("✓ Link enviado para o seu email!"); setTimeout(mostrarLogin, 2000); })
-    .catch(err=>{ showToast(err.message, "error"); });
+  try {
+    await auth.sendPasswordResetEmail(email);
+    showToast("✓ Link enviado para o seu email!");
+    setTimeout(mostrarLogin, 2000);
+  } catch(err){
+    showToast(err.message, "error");
+  }
 }
 </script>
 </body>

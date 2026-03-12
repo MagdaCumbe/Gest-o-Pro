@@ -870,53 +870,67 @@ function atualizarHistoricoDespesas(){
 }
 
 // ===== VENDAS =====
-function registrarVenda(){
-  let produtoNome = document.getElementById("produto").value;
+async function registrarVenda(){
+  let produtoNome = document.getElementById("produto").value.trim();
   let valor = parseFloat(document.getElementById("valorVenda").value);
   let pagamento = document.getElementById("pagamento").value;
   let hoje = new Date().toISOString().split("T")[0];
   if(!produtoNome||!valor){ showToast("Preencha todos os campos!", "error"); return; }
+
+  // Busca custo sempre direto do Firestore para garantir dado atualizado
+  let user = firebase.auth().currentUser;
+  let custo = 0;
   let itemEstoque = estoque.find(p=>p.nome.toLowerCase()===produtoNome.toLowerCase());
-  let custo = itemEstoque ? itemEstoque.precoCompra : 0;
+  if(!itemEstoque){
+    // Tenta buscar direto do Firestore caso o snapshot ainda não tenha carregado
+    const snap = await db.collection("usuarios").doc(user.uid).collection("estoque")
+      .where("nome","==",produtoNome).limit(1).get();
+    if(!snap.empty){ itemEstoque = {id:snap.docs[0].id, ...snap.docs[0].data()}; }
+  }
+  if(itemEstoque) custo = itemEstoque.precoCompra;
+
   let venda = {produto:produtoNome, valor, custo, pagamento, pago:true, data:hoje};
   if(pagamento==="Fiado"){
-    let nomeDevedor = document.getElementById("nomeDevedor").value;
-    let contatoDevedor = document.getElementById("contatoDevedor").value;
+    let nomeDevedor = document.getElementById("nomeDevedor").value.trim();
+    let contatoDevedor = document.getElementById("contatoDevedor").value.trim();
     let dataPagamento = document.getElementById("dataPagamento").value;
     if(!nomeDevedor||!contatoDevedor||!dataPagamento){ showToast("Preencha os dados do fiado!", "error"); return; }
     venda.pago = false;
     venda.devedor = {nome:nomeDevedor, contato:contatoDevedor, dataPagamento};
   }
-  let user = firebase.auth().currentUser;
+
   let ref = db.collection("usuarios").doc(user.uid).collection("vendas").doc();
   venda.id = ref.id;
-  ref.set(venda);
-  if(pagamento==="Fiado") fiados.push(venda);
-  if(itemEstoque&&(pagamento!=="Fiado"||venda.pago)){
-    itemEstoque.qtd = Math.max(0, itemEstoque.qtd-1);
-    db.collection("usuarios").doc(user.uid).collection("estoque").doc(itemEstoque.id).update({qtd:itemEstoque.qtd});
+  await ref.set(venda);
+
+  // Desconta estoque apenas para vendas pagas
+  if(itemEstoque && venda.pago){
+    const novaQtd = Math.max(0, itemEstoque.qtd - 1);
+    await db.collection("usuarios").doc(user.uid).collection("estoque")
+      .doc(itemEstoque.id).update({qtd: novaQtd});
   }
+
   document.getElementById("produto").value="";
   document.getElementById("valorVenda").value="";
   document.getElementById("pagamento").value="Dinheiro";
   document.getElementById("fiadoExtra").classList.add("hidden");
-  atualizarResumo(); atualizarListas(); atualizarResumoEstoque();
   showToast("✓ Venda registada com sucesso!");
+  // Snapshots atualizam automaticamente via onSnapshot
 }
 
 // ===== DESPESAS =====
-function registrarDespesa(){
-  let tipo = document.getElementById("tipoDespesa").value;
+async function registrarDespesa(){
+  let tipo = document.getElementById("tipoDespesa").value.trim();
   let valor = parseFloat(document.getElementById("valorDespesa").value);
   let mensal = document.getElementById("mensalDespesa").checked;
   if(!tipo||!valor){ showToast("Preencha todos os campos!", "error"); return; }
-  let despesa = {tipo, valor, mensal};
+  let hoje = new Date().toISOString().split("T")[0];
+  let despesa = {tipo, valor, mensal, data: hoje};
   let user = firebase.auth().currentUser;
-  db.collection("usuarios").doc(user.uid).collection("despesas").add(despesa);
+  await db.collection("usuarios").doc(user.uid).collection("despesas").add(despesa);
   document.getElementById("tipoDespesa").value="";
   document.getElementById("valorDespesa").value="";
   document.getElementById("mensalDespesa").checked=false;
-  atualizarResumo(); atualizarListas();
   showToast("✓ Despesa registada!");
 }
 
@@ -951,7 +965,7 @@ function atualizarResumo(){
   let vendasHoje = vendas.filter(v=>v.data===hoje&&(v.pagamento!=="Fiado"||v.pago));
   let totalVendasHoje = vendasHoje.reduce((a,b)=>a+b.valor,0);
   let lucroHoje = vendasHoje.reduce((total,v)=>total+(v.valor-(v.custo||0)),0);
-  let totalDespesasHoje = despesas.reduce((a,b)=>a+b.valor,0);
+  let totalDespesasHoje = despesas.filter(d=>d.data===hoje).reduce((a,b)=>a+b.valor,0);
   document.getElementById("totalVendas").innerText = totalVendasHoje.toFixed(2)+" MT";
   document.getElementById("totalDespesas").innerText = totalDespesasHoje.toFixed(2)+" MT";
   document.getElementById("lucro").innerText = (lucroHoje-totalDespesasHoje).toFixed(2)+" MT";
@@ -1010,31 +1024,58 @@ function inicializarPerfil(){
 
 async function carregarDados(uid){
   const userRef = db.collection("usuarios").doc(uid);
-  userRef.collection("vendas").onSnapshot(snapshot=>{
-    vendas = snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));
-    atualizarResumo(); atualizarListas();
-  });
-  userRef.collection("despesas").onSnapshot(snapshot=>{
-    despesas = snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));
-    atualizarResumo(); atualizarListas(); atualizarResumoEstoque();
-  });
-  userRef.collection("estoque").onSnapshot(snapshot=>{
-    estoque = snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));
-    atualizarResumoEstoque();
-  });
+
+  // Carrega perfil primeiro, antes dos snapshots
   const perfilDoc = await userRef.get();
-  if(perfilDoc.exists && perfilDoc.data().perfil) perfil = perfilDoc.data().perfil;
+  if(perfilDoc.exists && perfilDoc.data().perfil){
+    perfil = perfilDoc.data().perfil;
+  }
   atualizarSaudacao();
   inicializarPerfil();
+
+  // Snapshots em tempo real — ordenados por data
+  userRef.collection("vendas").orderBy("data","desc")
+    .onSnapshot(snapshot=>{
+      vendas = snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));
+      atualizarResumo();
+      atualizarListas();
+    });
+
+  userRef.collection("despesas").orderBy("data","desc")
+    .onSnapshot(snapshot=>{
+      despesas = snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));
+      atualizarResumo();
+      atualizarListas();
+      atualizarResumoEstoque();
+    });
+
+  userRef.collection("estoque").orderBy("nome","asc")
+    .onSnapshot(snapshot=>{
+      estoque = snapshot.docs.map(doc=>({id:doc.id,...doc.data()}));
+      atualizarResumoEstoque();
+    });
 }
 
 async function marcarComoPago(id){
   let user = auth.currentUser;
   if(!user) return;
-  await db.collection("usuarios").doc(user.uid).collection("vendas").doc(id).update({pago:true});
+  // Marca como pago no Firestore
+  await db.collection("usuarios").doc(user.uid).collection("vendas").doc(id).update({pago: true});
+
+  // Desconta o estoque agora que o fiado foi pago
+  const venda = vendas.find(v=>v.id===id);
+  if(venda){
+    const itemEstoque = estoque.find(p=>p.nome.toLowerCase()===venda.produto.toLowerCase());
+    if(itemEstoque){
+      const novaQtd = Math.max(0, itemEstoque.qtd - 1);
+      await db.collection("usuarios").doc(user.uid).collection("estoque")
+        .doc(itemEstoque.id).update({qtd: novaQtd});
+    }
+  }
   showToast("✓ Fiado marcado como pago!");
-  carregarDados(user.uid);
+  // onSnapshot recarrega automaticamente
 }
 </script>
 </body>
 </html>
+

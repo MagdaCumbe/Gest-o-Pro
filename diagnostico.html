@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnóstico Firebase</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0a0f1e; color:#f1f5f9; font-family:'DM Sans',sans-serif; padding:20px; }
+h1 { font-size:18px; margin-bottom:20px; color:#f97316; }
+.test { background:#111827; border:1px solid rgba(255,255,255,0.07); border-radius:12px; padding:16px; margin-bottom:12px; }
+.test-title { font-weight:700; font-size:14px; margin-bottom:8px; }
+.status { font-size:13px; padding:8px 12px; border-radius:8px; margin-top:8px; }
+.pending  { background:rgba(100,116,139,0.2); color:#94a3b8; }
+.ok       { background:rgba(16,185,129,0.15); color:#10b981; }
+.error    { background:rgba(244,63,94,0.15);  color:#f43f5e; }
+.warn     { background:rgba(249,115,22,0.15); color:#f97316; }
+pre { font-size:11px; margin-top:6px; color:#64748b; white-space:pre-wrap; word-break:break-all; }
+button { background:linear-gradient(135deg,#f97316,#ea580c); color:white; border:none; padding:12px 24px; border-radius:10px; font-weight:700; font-size:14px; cursor:pointer; margin-top:16px; }
+#uid-box { background:#1a2234; border-radius:8px; padding:10px; font-size:12px; margin-top:8px; color:#94a3b8; word-break:break-all; }
+</style>
+</head>
+<body>
+<h1>🔍 Diagnóstico Firebase</h1>
+
+<div class="test">
+  <div class="test-title">1. Firebase inicializado</div>
+  <div class="status pending" id="s1">A verificar...</div>
+</div>
+
+<div class="test">
+  <div class="test-title">2. Autenticação — utilizador logado</div>
+  <div class="status pending" id="s2">A verificar...</div>
+  <div id="uid-box" style="display:none"></div>
+</div>
+
+<div class="test">
+  <div class="test-title">3. Escrita no Firestore (vendas)</div>
+  <div class="status pending" id="s3">A aguardar auth...</div>
+</div>
+
+<div class="test">
+  <div class="test-title">4. Leitura do Firestore (vendas)</div>
+  <div class="status pending" id="s4">A aguardar escrita...</div>
+</div>
+
+<div class="test">
+  <div class="test-title">5. Leitura do Perfil</div>
+  <div class="status pending" id="s5">A aguardar auth...</div>
+</div>
+
+<div class="test">
+  <div class="test-title">6. Resultado Final</div>
+  <div class="status pending" id="s6">A aguardar testes...</div>
+</div>
+
+<button onclick="window.location.href='index.html'">← Voltar ao Login</button>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script>
+function set(id, cls, msg, detail) {
+  const el = document.getElementById(id);
+  el.className = 'status ' + cls;
+  el.textContent = msg;
+  if (detail) {
+    const pre = document.createElement('pre');
+    pre.textContent = detail;
+    el.parentElement.appendChild(pre);
+  }
+}
+
+// TESTE 1 — Firebase init
+let db, auth;
+try {
+  const firebaseConfig = {
+    apiKey: "AIzaSyDrFZ5LDIulhQlsurXs0GWP4QvJ6O2rq4A",
+    authDomain: "meu-26dbf.firebaseapp.com",
+    projectId: "meu-26dbf",
+    storageBucket: "meu-26dbf.firebasestorage.app",
+    messagingSenderId: "561029322629",
+    appId: "1:561029322629:web:7dda91ab2ff7aec60596ec"
+  };
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.firestore();
+  auth = firebase.auth();
+  set('s1', 'ok', '✓ Firebase inicializado com sucesso');
+} catch(e) {
+  set('s1', 'error', '✗ Erro ao inicializar Firebase', e.message);
+}
+
+// TESTE 2 — Auth
+auth.onAuthStateChanged(async user => {
+  if (!user) {
+    set('s2', 'warn', '⚠️ Nenhum utilizador logado — vai ao index.html primeiro fazer login');
+    set('s3', 'warn', '⚠️ Ignorado — sem utilizador autenticado');
+    set('s4', 'warn', '⚠️ Ignorado — sem utilizador autenticado');
+    set('s5', 'warn', '⚠️ Ignorado — sem utilizador autenticado');
+    set('s6', 'error', '✗ Não foi possível testar — faz login primeiro');
+    return;
+  }
+
+  set('s2', 'ok', '✓ Utilizador autenticado: ' + user.email);
+  const uidBox = document.getElementById('uid-box');
+  uidBox.style.display = 'block';
+  uidBox.textContent = 'UID: ' + user.uid;
+
+  const uid = user.uid;
+  let docId = null;
+
+  // TESTE 3 — Escrita
+  try {
+    set('s3', 'pending', '⏳ A escrever documento de teste...');
+    const ref = await db.collection('usuarios').doc(uid).collection('vendas').add({
+      produto: '_TESTE_DIAGNOSTICO_',
+      valor: 0.01,
+      data: new Date().toISOString().split('T')[0],
+      pagamento: 'Dinheiro',
+      pago: true,
+      custo: 0,
+      _diagnostico: true
+    });
+    docId = ref.id;
+    set('s3', 'ok', '✓ Escrita OK — doc ID: ' + docId);
+  } catch(e) {
+    set('s3', 'error', '✗ FALHOU a escrever', 'Código: ' + e.code + '\nMensagem: ' + e.message + '\n\nSolução provável: verifica as Regras do Firestore no Firebase Console.');
+    set('s4', 'warn', '⚠️ Ignorado — escrita falhou');
+    set('s5', 'pending', '⏳ A testar leitura do perfil...');
+    await testarPerfil(uid);
+    set('s6', 'error', '✗ Problemas detetados — ver detalhes acima');
+    return;
+  }
+
+  // TESTE 4 — Leitura
+  try {
+    set('s4', 'pending', '⏳ A ler documentos...');
+    const snap = await db.collection('usuarios').doc(uid).collection('vendas').get();
+    const docs = snap.docs.map(d => d.data());
+    const count = docs.length;
+
+    // Limpa o doc de teste
+    if (docId) await db.collection('usuarios').doc(uid).collection('vendas').doc(docId).delete();
+
+    set('s4', 'ok', `✓ Leitura OK — ${count} documento(s) encontrado(s) em vendas`);
+  } catch(e) {
+    set('s4', 'error', '✗ FALHOU a ler', 'Código: ' + e.code + '\nMensagem: ' + e.message);
+  }
+
+  // TESTE 5 — Perfil
+  await testarPerfil(uid);
+
+  // RESULTADO FINAL
+  const erros = ['s3','s4','s5'].filter(id => document.getElementById(id).className.includes('error'));
+  if (erros.length === 0) {
+    set('s6', 'ok', '✅ Tudo OK! O Firebase está a funcionar corretamente. Os dados devem persistir.');
+  } else {
+    set('s6', 'error', `✗ ${erros.length} problema(s) detetado(s). Vê os detalhes acima.`);
+  }
+});
+
+async function testarPerfil(uid) {
+  try {
+    set('s5', 'pending', '⏳ A ler perfil...');
+    const doc = await db.collection('usuarios').doc(uid).get();
+    if (doc.exists) {
+      const data = doc.data();
+      set('s5', 'ok', '✓ Documento do utilizador encontrado', JSON.stringify(data, null, 2));
+    } else {
+      set('s5', 'warn', '⚠️ Documento do utilizador ainda não existe (normal na primeira vez)');
+    }
+  } catch(e) {
+    set('s5', 'error', '✗ FALHOU a ler perfil', 'Código: ' + e.code + '\nMensagem: ' + e.message);
+  }
+}
+</script>
+</body>
+</html>

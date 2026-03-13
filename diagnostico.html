@@ -3,174 +3,151 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Diagnóstico Firebase</title>
+<title>Diagnóstico Firebase v2</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { background:#0a0f1e; color:#f1f5f9; font-family:'DM Sans',sans-serif; padding:20px; }
-h1 { font-size:18px; margin-bottom:20px; color:#f97316; }
-.test { background:#111827; border:1px solid rgba(255,255,255,0.07); border-radius:12px; padding:16px; margin-bottom:12px; }
-.test-title { font-weight:700; font-size:14px; margin-bottom:8px; }
-.status { font-size:13px; padding:8px 12px; border-radius:8px; margin-top:8px; }
-.pending  { background:rgba(100,116,139,0.2); color:#94a3b8; }
-.ok       { background:rgba(16,185,129,0.15); color:#10b981; }
-.error    { background:rgba(244,63,94,0.15);  color:#f43f5e; }
-.warn     { background:rgba(249,115,22,0.15); color:#f97316; }
-pre { font-size:11px; margin-top:6px; color:#64748b; white-space:pre-wrap; word-break:break-all; }
-button { background:linear-gradient(135deg,#f97316,#ea580c); color:white; border:none; padding:12px 24px; border-radius:10px; font-weight:700; font-size:14px; cursor:pointer; margin-top:16px; }
-#uid-box { background:#1a2234; border-radius:8px; padding:10px; font-size:12px; margin-top:8px; color:#94a3b8; word-break:break-all; }
+body { background:#0a0f1e; color:#f1f5f9; font-family:monospace; padding:16px; font-size:13px; }
+h1 { font-size:16px; margin-bottom:16px; color:#f97316; }
+.log { background:#111827; border:1px solid rgba(255,255,255,0.07); border-radius:10px; padding:14px; margin-bottom:10px; line-height:1.9; min-height:200px; }
+.ok   { color:#10b981; }
+.err  { color:#f43f5e; }
+.warn { color:#f97316; }
+.info { color:#94a3b8; }
+button { background:#f97316; color:white; border:none; padding:10px 20px; border-radius:8px; font-weight:bold; font-size:13px; cursor:pointer; margin-top:10px; margin-right:8px; }
 </style>
 </head>
 <body>
-<h1>🔍 Diagnóstico Firebase</h1>
-
-<div class="test">
-  <div class="test-title">1. Firebase inicializado</div>
-  <div class="status pending" id="s1">A verificar...</div>
-</div>
-
-<div class="test">
-  <div class="test-title">2. Autenticação — utilizador logado</div>
-  <div class="status pending" id="s2">A verificar...</div>
-  <div id="uid-box" style="display:none"></div>
-</div>
-
-<div class="test">
-  <div class="test-title">3. Escrita no Firestore (vendas)</div>
-  <div class="status pending" id="s3">A aguardar auth...</div>
-</div>
-
-<div class="test">
-  <div class="test-title">4. Leitura do Firestore (vendas)</div>
-  <div class="status pending" id="s4">A aguardar escrita...</div>
-</div>
-
-<div class="test">
-  <div class="test-title">5. Leitura do Perfil</div>
-  <div class="status pending" id="s5">A aguardar auth...</div>
-</div>
-
-<div class="test">
-  <div class="test-title">6. Resultado Final</div>
-  <div class="status pending" id="s6">A aguardar testes...</div>
-</div>
-
-<button onclick="window.location.href='index.html'">← Voltar ao Login</button>
+<h1>🔍 Diagnóstico Firebase v2</h1>
+<div class="log" id="log"></div>
+<button onclick="window.location.reload()">🔄 Repetir teste</button>
+<button onclick="window.location.href='index.html'">← Login</button>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script>
-function set(id, cls, msg, detail) {
-  const el = document.getElementById(id);
-  el.className = 'status ' + cls;
-  el.textContent = msg;
-  if (detail) {
-    const pre = document.createElement('pre');
-    pre.textContent = detail;
-    el.parentElement.appendChild(pre);
-  }
+const logEl = document.getElementById('log');
+
+function log(msg, cls='info') {
+  const d = document.createElement('div');
+  d.className = cls;
+  d.textContent = '› ' + msg;
+  logEl.appendChild(d);
 }
 
-// TESTE 1 — Firebase init
 let db, auth;
 try {
-  const firebaseConfig = {
+  firebase.initializeApp({
     apiKey: "AIzaSyDrFZ5LDIulhQlsurXs0GWP4QvJ6O2rq4A",
     authDomain: "meu-26dbf.firebaseapp.com",
     projectId: "meu-26dbf",
     storageBucket: "meu-26dbf.firebasestorage.app",
     messagingSenderId: "561029322629",
     appId: "1:561029322629:web:7dda91ab2ff7aec60596ec"
-  };
-  firebase.initializeApp(firebaseConfig);
+  });
   db = firebase.firestore();
   auth = firebase.auth();
-  set('s1', 'ok', '✓ Firebase inicializado com sucesso');
+
+  // Força long polling — contorna bloqueios de WebSocket
+  db.settings({ experimentalForceLongPolling: true, merge: true });
+
+  log('✓ Firebase inicializado', 'ok');
+  log('ℹ Long polling ativado', 'warn');
 } catch(e) {
-  set('s1', 'error', '✗ Erro ao inicializar Firebase', e.message);
+  log('✗ Erro init: ' + e.message, 'err');
 }
 
-// TESTE 2 — Auth
 auth.onAuthStateChanged(async user => {
   if (!user) {
-    set('s2', 'warn', '⚠️ Nenhum utilizador logado — vai ao index.html primeiro fazer login');
-    set('s3', 'warn', '⚠️ Ignorado — sem utilizador autenticado');
-    set('s4', 'warn', '⚠️ Ignorado — sem utilizador autenticado');
-    set('s5', 'warn', '⚠️ Ignorado — sem utilizador autenticado');
-    set('s6', 'error', '✗ Não foi possível testar — faz login primeiro');
+    log('✗ Sem utilizador autenticado — faz login primeiro', 'err');
     return;
   }
 
-  set('s2', 'ok', '✓ Utilizador autenticado: ' + user.email);
-  const uidBox = document.getElementById('uid-box');
-  uidBox.style.display = 'block';
-  uidBox.textContent = 'UID: ' + user.uid;
+  log('✓ Auth OK: ' + user.email, 'ok');
+  log('  UID: ' + user.uid, 'info');
 
   const uid = user.uid;
-  let docId = null;
 
-  // TESTE 3 — Escrita
+  // Timeout manual de 12 segundos
+  let done = false;
+  const timer = setTimeout(() => {
+    if (!done) {
+      done = true;
+      log('', 'info');
+      log('✗ TIMEOUT — Firestore não respondeu em 12 segundos', 'err');
+      log('━━━━━━━━━━━━━━━━━━━━━', 'info');
+      log('DIAGNÓSTICO DO TIMEOUT:', 'warn');
+      log('Mesmo com long polling, sem resposta.', 'warn');
+      log('Isto indica que o projeto Firebase pode estar:', 'warn');
+      log('  1. Com a API do Firestore desativada', 'warn');
+      log('  2. Com billing suspenso no Google Cloud', 'warn');
+      log('  3. Com restrições de API key', 'warn');
+      log('', 'info');
+      log('→ Vai a: console.cloud.google.com', 'ok');
+      log('→ Projeto: meu-26dbf', 'ok');
+      log('→ APIs e Serviços → Biblioteca', 'ok');
+      log('→ Procura "Cloud Firestore API"', 'ok');
+      log('→ Verifica se está ATIVADA', 'ok');
+      testarHTTP(uid);
+    }
+  }, 12000);
+
+  log('⏳ A escrever no Firestore (aguarda até 12s)...', 'info');
+
   try {
-    set('s3', 'pending', '⏳ A escrever documento de teste...');
     const ref = await db.collection('usuarios').doc(uid).collection('vendas').add({
-      produto: '_TESTE_DIAGNOSTICO_',
-      valor: 0.01,
-      data: new Date().toISOString().split('T')[0],
-      pagamento: 'Dinheiro',
-      pago: true,
-      custo: 0,
-      _diagnostico: true
+      _teste: true,
+      valor: 0,
+      data: new Date().toISOString()
     });
-    docId = ref.id;
-    set('s3', 'ok', '✓ Escrita OK — doc ID: ' + docId);
-  } catch(e) {
-    set('s3', 'error', '✗ FALHOU a escrever', 'Código: ' + e.code + '\nMensagem: ' + e.message + '\n\nSolução provável: verifica as Regras do Firestore no Firebase Console.');
-    set('s4', 'warn', '⚠️ Ignorado — escrita falhou');
-    set('s5', 'pending', '⏳ A testar leitura do perfil...');
-    await testarPerfil(uid);
-    set('s6', 'error', '✗ Problemas detetados — ver detalhes acima');
-    return;
-  }
 
-  // TESTE 4 — Leitura
-  try {
-    set('s4', 'pending', '⏳ A ler documentos...');
+    if (done) return;
+    done = true;
+    clearTimeout(timer);
+
+    log('✓ ESCRITA OK! ID: ' + ref.id, 'ok');
+
     const snap = await db.collection('usuarios').doc(uid).collection('vendas').get();
-    const docs = snap.docs.map(d => d.data());
-    const count = docs.length;
+    log('✓ LEITURA OK — ' + snap.size + ' doc(s)', 'ok');
 
-    // Limpa o doc de teste
-    if (docId) await db.collection('usuarios').doc(uid).collection('vendas').doc(docId).delete();
+    await ref.delete();
+    log('✓ Limpeza OK', 'ok');
 
-    set('s4', 'ok', `✓ Leitura OK — ${count} documento(s) encontrado(s) em vendas`);
+    const perf = await db.collection('usuarios').doc(uid).get();
+    log(perf.exists ? '✓ Perfil existe' : 'ℹ Perfil ainda não criado (normal)', perf.exists ? 'ok' : 'warn');
+
+    log('━━━━━━━━━━━━━━━━━━━━━', 'info');
+    log('✅ FIRESTORE FUNCIONA! Problema está no tttt.html', 'ok');
+    log('Faz upload do app.html corrigido e renomeia para tttt.html', 'warn');
+
   } catch(e) {
-    set('s4', 'error', '✗ FALHOU a ler', 'Código: ' + e.code + '\nMensagem: ' + e.message);
-  }
-
-  // TESTE 5 — Perfil
-  await testarPerfil(uid);
-
-  // RESULTADO FINAL
-  const erros = ['s3','s4','s5'].filter(id => document.getElementById(id).className.includes('error'));
-  if (erros.length === 0) {
-    set('s6', 'ok', '✅ Tudo OK! O Firebase está a funcionar corretamente. Os dados devem persistir.');
-  } else {
-    set('s6', 'error', `✗ ${erros.length} problema(s) detetado(s). Vê os detalhes acima.`);
+    if (done) return;
+    done = true;
+    clearTimeout(timer);
+    log('✗ ERRO: ' + e.code, 'err');
+    log('  ' + e.message, 'err');
+    testarHTTP(uid);
   }
 });
 
-async function testarPerfil(uid) {
+async function testarHTTP(uid) {
+  log('━━━━━━━━━━━━━━━━━━━━━', 'info');
+  log('⏳ A testar HTTP para firestore.googleapis.com...', 'info');
   try {
-    set('s5', 'pending', '⏳ A ler perfil...');
-    const doc = await db.collection('usuarios').doc(uid).get();
-    if (doc.exists) {
-      const data = doc.data();
-      set('s5', 'ok', '✓ Documento do utilizador encontrado', JSON.stringify(data, null, 2));
-    } else {
-      set('s5', 'warn', '⚠️ Documento do utilizador ainda não existe (normal na primeira vez)');
+    const r = await fetch('https://firestore.googleapis.com/v1/projects/meu-26dbf/databases/(default)/documents/usuarios/' + uid);
+    log('✓ HTTP responde — status: ' + r.status, 'ok');
+    if (r.status === 401 || r.status === 403) {
+      log('  Status ' + r.status + ' = normal (sem token), MAS rede funciona!', 'ok');
+      log('  → O Firestore está acessível pela rede', 'ok');
+      log('  → O problema é provavelmente a API Key restrita', 'warn');
+      log('  → Vai ao Firebase Console → Configurações → API Key', 'warn');
+      log('  → Remove restrições de domínio da API key', 'warn');
+    } else if (r.status === 200) {
+      log('  Documento encontrado via HTTP direto', 'ok');
     }
   } catch(e) {
-    set('s5', 'error', '✗ FALHOU a ler perfil', 'Código: ' + e.code + '\nMensagem: ' + e.message);
+    log('✗ HTTP falhou: ' + e.message, 'err');
+    log('  → Problema de rede ou CORS', 'err');
   }
 }
 </script>

@@ -809,8 +809,10 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+// Fix para GitHub Pages — troca WebSockets por HTTP polling
 db.settings({ experimentalForceLongPolling: true, merge: true });
 const auth = firebase.auth();
+
 // ===== STATE =====
 let vendas = [], despesas = [], estoque = [];
 let perfil = { nome: "Usuário", negocio: "Meu Negócio", email: "" };
@@ -1229,24 +1231,33 @@ function carregarDados(uid) {
     let vendasLoaded = false, despesasLoaded = false, estoqueLoaded = false;
 
     function checkAllLoaded() {
-      if (vendasLoaded && despesasLoaded && estoqueLoaded) resolve();
+      if (vendasLoaded && despesasLoaded && estoqueLoaded) {
+        clearTimeout(timeoutSeguranca);
+        resolve();
+      }
     }
+
+    // Timeout de segurança — se Firestore demorar +8s, abre o app mesmo assim
+    const timeoutSeguranca = setTimeout(() => {
+      if (!vendasLoaded) { vendasLoaded = true; }
+      if (!despesasLoaded) { despesasLoaded = true; }
+      if (!estoqueLoaded) { estoqueLoaded = true; }
+      resolve();
+    }, 8000);
 
     // Vendas — tempo real
     unsubVendas = userRef.collection("vendas").orderBy("data", "asc").onSnapshot(snapshot => {
       vendas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       atualizarResumo();
       atualizarListaFiado();
-      vendasLoaded = true;
-      checkAllLoaded();
+      if (!vendasLoaded) { vendasLoaded = true; checkAllLoaded(); }
     }, () => { vendasLoaded = true; checkAllLoaded(); });
 
     // Despesas — tempo real
     unsubDespesas = userRef.collection("despesas").onSnapshot(snapshot => {
       despesas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       atualizarResumo();
-      despesasLoaded = true;
-      checkAllLoaded();
+      if (!despesasLoaded) { despesasLoaded = true; checkAllLoaded(); }
     }, () => { despesasLoaded = true; checkAllLoaded(); });
 
     // Estoque — tempo real
@@ -1254,8 +1265,7 @@ function carregarDados(uid) {
       estoque = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       atualizarResumoEstoque();
       atualizarSugestoesProdutos();
-      estoqueLoaded = true;
-      checkAllLoaded();
+      if (!estoqueLoaded) { estoqueLoaded = true; checkAllLoaded(); }
     }, () => { estoqueLoaded = true; checkAllLoaded(); });
 
     // Perfil

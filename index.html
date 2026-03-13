@@ -34,7 +34,6 @@ body {
   padding: 20px;
   overflow: hidden;
 }
-/* Ambient glows */
 body::before {
   content: '';
   position: fixed;
@@ -52,7 +51,6 @@ body::after {
   pointer-events: none;
 }
 
-/* ===== CARD ===== */
 .card {
   width: 100%;
   max-width: 400px;
@@ -77,7 +75,6 @@ body::after {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ===== LOGO ===== */
 .logo {
   display: flex;
   align-items: center;
@@ -111,7 +108,6 @@ body::after {
   margin-top: -4px;
 }
 
-/* ===== SCREEN TITLE ===== */
 .screen-title {
   font-family: var(--font-display);
   font-size: 18px;
@@ -124,7 +120,6 @@ body::after {
 }
 .screen-title i { color: var(--accent); font-size: 16px; }
 
-/* ===== FORM ===== */
 .form-group { margin-bottom: 14px; }
 .form-group label {
   font-size: 11px;
@@ -135,9 +130,7 @@ body::after {
   margin-bottom: 6px;
   display: block;
 }
-.input-wrap {
-  position: relative;
-}
+.input-wrap { position: relative; }
 .input-wrap i.field-icon {
   position: absolute;
   left: 14px;
@@ -177,7 +170,6 @@ input:focus {
   background: #1e2a3a;
 }
 
-/* ===== BUTTON ===== */
 .btn {
   width: 100%;
   padding: 14px;
@@ -195,15 +187,15 @@ input:focus {
   gap: 8px;
   margin-top: 8px;
 }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none !important; }
 .btn-primary {
   background: linear-gradient(135deg, var(--accent), #ea580c);
   color: white;
   box-shadow: 0 4px 18px rgba(249,115,22,0.35);
 }
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(249,115,22,0.45); }
-.btn-primary:active { transform: translateY(0); }
+.btn-primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(249,115,22,0.45); }
+.btn-primary:active:not(:disabled) { transform: translateY(0); }
 
-/* ===== LINKS ===== */
 .links {
   text-align: center;
   margin-top: 20px;
@@ -221,14 +213,6 @@ input:focus {
 .links a:hover { opacity: 0.8; }
 .links .sep { color: var(--border); margin: 0 6px; }
 
-/* ===== DIVIDER ===== */
-.divider {
-  height: 1px;
-  background: var(--border);
-  margin: 20px 0;
-}
-
-/* ===== TOAST ===== */
 #toast {
   position: fixed;
   bottom: 30px;
@@ -251,15 +235,22 @@ input:focus {
 #toast.success { border-color: rgba(16,185,129,0.4); color: var(--green); }
 #toast.error { border-color: rgba(244,63,94,0.4); color: var(--red); }
 
-/* ===== HIDDEN ===== */
 .hidden { display: none !important; }
+
+/* Loading spinner no botão */
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>
 </head>
 <body>
 
 <div class="card">
-
-  <!-- Branding -->
   <div class="logo">
     <div class="logo-icon">GP</div>
     <div class="logo-title">Gestão <span>Pro</span></div>
@@ -274,7 +265,7 @@ input:focus {
       <label>Email</label>
       <div class="input-wrap">
         <i class="fa fa-envelope field-icon"></i>
-        <input type="email" id="emailLogin" placeholder="seu@email.com">
+        <input type="email" id="emailLogin" placeholder="seu@email.com" autocomplete="email">
       </div>
     </div>
 
@@ -282,12 +273,13 @@ input:focus {
       <label>Senha</label>
       <div class="input-wrap">
         <i class="fa fa-key field-icon"></i>
-        <input type="password" id="senhaLogin" placeholder="••••••••">
+        <input type="password" id="senhaLogin" placeholder="••••••••" autocomplete="current-password"
+          onkeydown="if(event.key==='Enter') fazerLogin()">
         <i class="fa fa-eye eye-icon" onclick="toggleSenha('senhaLogin', this)"></i>
       </div>
     </div>
 
-    <button class="btn btn-primary" onclick="fazerLogin()">
+    <button class="btn btn-primary" id="btnLogin" onclick="fazerLogin()">
       <i class="fa fa-arrow-right-to-bracket"></i> Entrar
     </button>
 
@@ -306,7 +298,7 @@ input:focus {
       <label>Nome</label>
       <div class="input-wrap">
         <i class="fa fa-user field-icon"></i>
-        <input type="text" id="nomeCadastro" placeholder="Seu nome completo">
+        <input type="text" id="nomeCadastro" placeholder="Seu nome completo" autocomplete="name">
       </div>
     </div>
 
@@ -314,7 +306,7 @@ input:focus {
       <label>Email</label>
       <div class="input-wrap">
         <i class="fa fa-envelope field-icon"></i>
-        <input type="email" id="emailCadastro" placeholder="seu@email.com">
+        <input type="email" id="emailCadastro" placeholder="seu@email.com" autocomplete="email">
       </div>
     </div>
 
@@ -322,12 +314,13 @@ input:focus {
       <label>Senha</label>
       <div class="input-wrap">
         <i class="fa fa-key field-icon"></i>
-        <input type="password" id="senhaCadastro" placeholder="Mínimo 6 caracteres">
+        <input type="password" id="senhaCadastro" placeholder="Mínimo 6 caracteres" autocomplete="new-password"
+          onkeydown="if(event.key==='Enter') criarConta()">
         <i class="fa fa-eye eye-icon" onclick="toggleSenha('senhaCadastro', this)"></i>
       </div>
     </div>
 
-    <button class="btn btn-primary" onclick="criarConta()">
+    <button class="btn btn-primary" id="btnCadastro" onclick="criarConta()">
       <i class="fa fa-check"></i> Criar Conta
     </button>
 
@@ -348,11 +341,12 @@ input:focus {
       <label>Email</label>
       <div class="input-wrap">
         <i class="fa fa-envelope field-icon"></i>
-        <input type="email" id="emailRecuperar" placeholder="seu@email.com">
+        <input type="email" id="emailRecuperar" placeholder="seu@email.com"
+          onkeydown="if(event.key==='Enter') recuperarSenha()">
       </div>
     </div>
 
-    <button class="btn btn-primary" onclick="recuperarSenha()">
+    <button class="btn btn-primary" id="btnRecuperar" onclick="recuperarSenha()">
       <i class="fa fa-paper-plane"></i> Enviar Link
     </button>
 
@@ -360,15 +354,14 @@ input:focus {
       <a onclick="mostrarLogin()">← Voltar ao login</a>
     </div>
   </div>
-
 </div>
 
 <div id="toast"></div>
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/12.9.0/firebase-firestore-compat.js"></script>
+<!-- Firebase SDK 9.23.0 compat (MESMA versão do app.html) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 
 <script>
 const firebaseConfig = {
@@ -382,24 +375,40 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
+// Redireciona se já estiver logado
+auth.onAuthStateChanged(user => {
+  if (user) window.location.href = "tttt.html";
+});
+
 // ===== TOAST =====
-function showToast(msg, type='success'){
+function showToast(msg, type = 'success') {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.className = 'show ' + type;
-  setTimeout(()=>{ t.className = ''; }, 3000);
+  setTimeout(() => { t.className = ''; }, 3200);
+}
+
+// ===== LOADING BUTTON =====
+function setLoading(btnId, loading) {
+  const btn = document.getElementById(btnId);
+  if (loading) {
+    btn.disabled = true;
+    btn.innerHTML = '<div class="spinner"></div> A processar...';
+  } else {
+    btn.disabled = false;
+  }
 }
 
 // ===== NAVEGAÇÃO =====
-function mostrarLogin(){ esconderTudo(); document.getElementById("loginForm").classList.remove("hidden"); }
-function mostrarCadastro(){ esconderTudo(); document.getElementById("cadastroForm").classList.remove("hidden"); }
-function mostrarRecuperar(){ esconderTudo(); document.getElementById("recuperarForm").classList.remove("hidden"); }
-function esconderTudo(){
-  ["loginForm","cadastroForm","recuperarForm"].forEach(id=>document.getElementById(id).classList.add("hidden"));
+function mostrarLogin() { esconderTudo(); document.getElementById("loginForm").classList.remove("hidden"); }
+function mostrarCadastro() { esconderTudo(); document.getElementById("cadastroForm").classList.remove("hidden"); }
+function mostrarRecuperar() { esconderTudo(); document.getElementById("recuperarForm").classList.remove("hidden"); }
+function esconderTudo() {
+  ["loginForm", "cadastroForm", "recuperarForm"].forEach(id => document.getElementById(id).classList.add("hidden"));
 }
 
 // ===== TOGGLE SENHA =====
-function toggleSenha(id, icon){
+function toggleSenha(id, icon) {
   const input = document.getElementById(id);
   const isHidden = input.type === "password";
   input.type = isHidden ? "text" : "password";
@@ -407,54 +416,80 @@ function toggleSenha(id, icon){
   icon.classList.toggle("fa-eye-slash", isHidden);
 }
 
+// ===== MENSAGENS DE ERRO PT =====
+function traduzirErro(code) {
+  const erros = {
+    "auth/user-not-found": "Email não encontrado.",
+    "auth/wrong-password": "Senha incorreta.",
+    "auth/invalid-email": "Email inválido.",
+    "auth/email-already-in-use": "Este email já está em uso.",
+    "auth/weak-password": "A senha deve ter pelo menos 6 caracteres.",
+    "auth/too-many-requests": "Muitas tentativas. Tente novamente mais tarde.",
+    "auth/invalid-credential": "Email ou senha inválidos.",
+    "auth/network-request-failed": "Erro de conexão. Verifique a internet."
+  };
+  return erros[code] || "Erro inesperado. Tente novamente.";
+}
+
 // ===== CADASTRO =====
-async function criarConta(){
-  const nome  = document.getElementById("nomeCadastro").value.trim();
+function criarConta() {
+  const nome = document.getElementById("nomeCadastro").value.trim();
   const email = document.getElementById("emailCadastro").value.trim();
   const senha = document.getElementById("senhaCadastro").value;
-  if(!nome||!email||!senha){ showToast("Preencha todos os campos", "error"); return; }
-  try {
-    const cred = await auth.createUserWithEmailAndPassword(email, senha);
-    // Guarda o nome no Firebase Auth
-    await cred.user.updateProfile({ displayName: nome });
-    // Guarda o perfil no Firestore para o app principal usar
-    const db = firebase.firestore();
-    await db.collection("usuarios").doc(cred.user.uid).set({
-      perfil: { nome, negocio: "", email }
-    }, { merge: true });
-    showToast("✓ Conta criada com sucesso!");
-    setTimeout(mostrarLogin, 1500);
-  } catch(err){
-    showToast(err.message, "error");
-  }
+  if (!nome || !email || !senha) { showToast("Preencha todos os campos", "error"); return; }
+  if (senha.length < 6) { showToast("A senha deve ter pelo menos 6 caracteres", "error"); return; }
+
+  setLoading("btnCadastro", true);
+  auth.createUserWithEmailAndPassword(email, senha)
+    .then(cred => {
+      // Salva o nome do utilizador no Firestore
+      return firebase.firestore().collection("usuarios").doc(cred.user.uid).set({
+        perfil: { nome, negocio: "Meu Negócio", email }
+      });
+    })
+    .then(() => {
+      showToast("✓ Conta criada! A entrar...");
+      setTimeout(() => { window.location.href = "app.html"; }, 1200);
+    })
+    .catch(err => {
+      setLoading("btnCadastro", false);
+      document.getElementById("btnCadastro").innerHTML = '<i class="fa fa-check"></i> Criar Conta';
+      showToast(traduzirErro(err.code), "error");
+    });
 }
 
 // ===== LOGIN =====
-async function fazerLogin(){
+function fazerLogin() {
   const email = document.getElementById("emailLogin").value.trim();
   const senha = document.getElementById("senhaLogin").value;
-  if(!email||!senha){ showToast("Preencha todos os campos", "error"); return; }
-  try {
-    await auth.signInWithEmailAndPassword(email, senha);
-    window.location.href = "tttt.html";
-  } catch(err){
-    const msg = err.code === "auth/wrong-password" || err.code === "auth/user-not-found"
-      ? "Email ou senha inválidos" : err.message;
-    showToast(msg, "error");
-  }
+  if (!email || !senha) { showToast("Preencha todos os campos", "error"); return; }
+
+  setLoading("btnLogin", true);
+  auth.signInWithEmailAndPassword(email, senha)
+    .then(() => { window.location.href = "app.html"; })
+    .catch(err => {
+      setLoading("btnLogin", false);
+      document.getElementById("btnLogin").innerHTML = '<i class="fa fa-arrow-right-to-bracket"></i> Entrar';
+      showToast(traduzirErro(err.code), "error");
+    });
 }
 
-// ===== RECUPERAR =====
-async function recuperarSenha(){
+// ===== RECUPERAR SENHA =====
+function recuperarSenha() {
   const email = document.getElementById("emailRecuperar").value.trim();
-  if(!email){ showToast("Digite o seu email", "error"); return; }
-  try {
-    await auth.sendPasswordResetEmail(email);
-    showToast("✓ Link enviado para o seu email!");
-    setTimeout(mostrarLogin, 2000);
-  } catch(err){
-    showToast(err.message, "error");
-  }
+  if (!email) { showToast("Digite o seu email", "error"); return; }
+
+  setLoading("btnRecuperar", true);
+  auth.sendPasswordResetEmail(email)
+    .then(() => {
+      showToast("✓ Link enviado para o seu email!");
+      setTimeout(mostrarLogin, 2200);
+    })
+    .catch(err => {
+      setLoading("btnRecuperar", false);
+      document.getElementById("btnRecuperar").innerHTML = '<i class="fa fa-paper-plane"></i> Enviar Link';
+      showToast(traduzirErro(err.code), "error");
+    });
 }
 </script>
 </body>

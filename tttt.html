@@ -9,9 +9,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
 :root {
-  --primary: #0f172a;
   --accent: #f97316;
-  --accent2: #fb923c;
   --green: #10b981;
   --red: #f43f5e;
   --blue: #3b82f6;
@@ -28,484 +26,165 @@
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 html { scroll-behavior: smooth; }
 body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--font-body);
-  padding-bottom: 90px;
-  min-height: 100vh;
-  overflow-x: hidden;
+  background: var(--bg); color: var(--text); font-family: var(--font-body);
+  padding-bottom: 90px; min-height: 100vh; overflow-x: hidden;
 }
 body::before {
-  content: '';
-  position: fixed;
-  top: -200px; left: -200px;
-  width: 600px; height: 600px;
-  background: radial-gradient(circle, rgba(249,115,22,0.08) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
+  content:''; position:fixed; top:-200px; left:-200px; width:600px; height:600px;
+  background:radial-gradient(circle, rgba(249,115,22,0.08) 0%, transparent 70%);
+  pointer-events:none; z-index:0;
 }
 body::after {
-  content: '';
-  position: fixed;
-  bottom: -100px; right: -100px;
-  width: 400px; height: 400px;
-  background: radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
+  content:''; position:fixed; bottom:-100px; right:-100px; width:400px; height:400px;
+  background:radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 70%);
+  pointer-events:none; z-index:0;
 }
-
-/* ===== HEADER ===== */
 header {
-  padding: 28px 20px 14px;
-  position: relative;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 6px;
+  padding:28px 20px 14px; position:relative; z-index:10;
+  display:flex; align-items:center; justify-content:space-between;
+  border-bottom:1px solid var(--border); margin-bottom:6px;
 }
-.header-left h1 {
-  font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 700;
-  letter-spacing: -0.3px;
-}
-.header-left h1 span { color: var(--accent); }
-.header-left p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.header-left h1 { font-family:var(--font-display); font-size:20px; font-weight:700; letter-spacing:-0.3px; }
+.header-left h1 span { color:var(--accent); }
+.header-left p { font-size:12px; color:var(--muted); margin-top:2px; }
 .header-logo {
-  width: 40px; height: 40px;
-  background: linear-gradient(135deg, var(--accent), #f43f5e);
-  border-radius: 12px;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display);
-  font-weight: 800;
-  font-size: 14px;
-  color: white;
-  box-shadow: 0 0 20px rgba(249,115,22,0.3);
+  width:40px; height:40px; background:linear-gradient(135deg,var(--accent),#f43f5e);
+  border-radius:12px; display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-display); font-weight:800; font-size:14px; color:white;
+  box-shadow:0 0 20px rgba(249,115,22,0.3);
 }
-
-/* ===== CONTAINER ===== */
-.container { padding: 14px 16px; position: relative; z-index: 1; }
-
-/* ===== CARDS ===== */
+.container { padding:14px 16px; position:relative; z-index:1; }
 .card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  padding: 22px;
-  border-radius: 20px;
-  margin-bottom: 14px;
-  position: relative;
-  overflow: hidden;
-  transition: border-color 0.2s;
+  background:var(--surface); border:1px solid var(--border);
+  padding:22px; border-radius:20px; margin-bottom:14px;
+  position:relative; overflow:hidden;
 }
 .card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(249,115,22,0.4), transparent);
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg,transparent,rgba(249,115,22,0.4),transparent);
 }
-.card h3 {
-  font-family: var(--font-display);
-  font-size: 15px;
-  font-weight: 700;
-  margin-bottom: 16px;
-  color: var(--text);
-  letter-spacing: -0.2px;
-}
-
-/* ===== STAT CARDS ===== */
-.summary { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.card h3 { font-family:var(--font-display); font-size:15px; font-weight:700; margin-bottom:16px; letter-spacing:-0.2px; }
+.summary { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 .summary .box {
-  padding: 20px 16px;
-  border-radius: 18px;
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: rgba(255,255,255,0.75);
-  position: relative;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.08);
-  transition: transform 0.2s, box-shadow 0.2s;
+  padding:20px 16px; border-radius:18px; font-size:11px; font-weight:600;
+  text-transform:uppercase; letter-spacing:0.5px; color:rgba(255,255,255,0.75);
+  position:relative; overflow:hidden; border:1px solid rgba(255,255,255,0.08);
 }
-.summary .box:active { transform: scale(0.98); }
 .summary .box strong {
-  display: block;
-  font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 800;
-  margin-top: 8px;
-  color: white;
-  letter-spacing: -0.5px;
+  display:block; font-family:var(--font-display); font-size:20px;
+  font-weight:800; margin-top:8px; color:white; letter-spacing:-0.5px;
 }
-.summary .box.full { grid-column: 1 / -1; }
-.box.blue { background: linear-gradient(135deg, #1e3a5f, #1e40af); box-shadow: 0 4px 20px rgba(30,64,175,0.3); }
-.box.green { background: linear-gradient(135deg, #064e3b, #059669); box-shadow: 0 4px 20px rgba(5,150,105,0.3); }
-.box.red { background: linear-gradient(135deg, #7f1d1d, #dc2626); box-shadow: 0 4px 20px rgba(220,38,38,0.25); }
-.box.orange { background: linear-gradient(135deg, #78350f, #d97706); box-shadow: 0 4px 20px rgba(217,119,6,0.3); }
-.box .box-icon {
-  position: absolute;
-  top: 14px; right: 14px;
-  font-size: 22px;
-  opacity: 0.2;
-}
-
-/* ===== INPUTS ===== */
-.form-group { margin-bottom: 12px; }
+.summary .box.full { grid-column:1/-1; }
+.box.blue   { background:linear-gradient(135deg,#1e3a5f,#1e40af); box-shadow:0 4px 20px rgba(30,64,175,0.3); }
+.box.green  { background:linear-gradient(135deg,#064e3b,#059669); box-shadow:0 4px 20px rgba(5,150,105,0.3); }
+.box.red    { background:linear-gradient(135deg,#7f1d1d,#dc2626); box-shadow:0 4px 20px rgba(220,38,38,0.25); }
+.box.orange { background:linear-gradient(135deg,#78350f,#d97706); box-shadow:0 4px 20px rgba(217,119,6,0.3); }
+.box .box-icon { position:absolute; top:14px; right:14px; font-size:22px; opacity:0.2; }
+.form-group { margin-bottom:12px; }
 .form-group label {
-  font-size: 11px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: var(--muted2);
-  margin-bottom: 6px;
-  display: block;
+  font-size:11px; font-weight:600; text-transform:uppercase;
+  letter-spacing:0.5px; color:var(--muted2); margin-bottom:6px; display:block;
 }
 input, select {
-  width: 100%;
-  padding: 13px 16px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
-  background: var(--surface2);
-  color: var(--text);
-  font-family: var(--font-body);
-  font-size: 14px;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  -webkit-appearance: none;
+  width:100%; padding:13px 16px; border-radius:12px; border:1px solid var(--border);
+  background:var(--surface2); color:var(--text); font-family:var(--font-body);
+  font-size:14px; transition:border-color 0.2s, box-shadow 0.2s; -webkit-appearance:none;
 }
-select { appearance: none; cursor: pointer; }
-input::placeholder { color: var(--muted); }
+select { appearance:none; cursor:pointer; }
+input::placeholder { color:var(--muted); }
 input:focus, select:focus {
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(249,115,22,0.12);
-  background: #1e2a3a;
+  outline:none; border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(249,115,22,0.12); background:#1e2a3a;
 }
-
-/* ===== BUTTONS ===== */
 .btn {
-  width: 100%;
-  padding: 14px;
-  border: none;
-  border-radius: 12px;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 13px;
-  letter-spacing: 0.3px;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+  width:100%; padding:14px; border:none; border-radius:12px;
+  font-family:var(--font-display); font-weight:700; font-size:13px; letter-spacing:0.3px;
+  cursor:pointer; transition:all 0.2s; display:flex; align-items:center; justify-content:center; gap:8px;
 }
-.btn-primary {
-  background: linear-gradient(135deg, var(--accent), #ea580c);
-  color: white;
-  box-shadow: 0 4px 15px rgba(249,115,22,0.35);
-}
-.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(249,115,22,0.45); }
-.btn-primary:active { transform: translateY(0); }
-.btn-ghost {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  color: var(--muted2);
-}
-.btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
-.btn-danger { background: linear-gradient(135deg, #dc2626, #b91c1c); color: white; }
-.btn-success { background: linear-gradient(135deg, var(--green), #059669); color: white; }
-.btn-sm {
-  padding: 8px 14px;
-  border-radius: 9px;
-  font-size: 12px;
-  width: auto;
-}
-button { font-family: var(--font-body); }
-
-/* ===== LIST ITEMS ===== */
-.list-item {
-  padding: 16px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: 13px;
-  line-height: 1.8;
-}
-.list-item:last-child { border-bottom: none; }
-.list-meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 8px;
-}
-.list-name {
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--text);
-}
-.list-value {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 14px;
-  color: var(--green);
-  white-space: nowrap;
-}
-.list-sub {
-  font-size: 11px;
-  color: var(--muted);
-  margin-top: 3px;
-}
-.tag {
-  display: inline-block;
-  padding: 3px 9px;
-  border-radius: 20px;
-  font-size: 10px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-}
-.tag-orange { background: rgba(249,115,22,0.15); color: var(--accent); }
-.tag-red { background: rgba(244,63,94,0.15); color: var(--red); }
-.tag-green { background: rgba(16,185,129,0.12); color: var(--green); }
-.tag-blue { background: rgba(59,130,246,0.15); color: var(--blue); }
-
-/* ===== NAVBAR ===== */
+.btn-primary { background:linear-gradient(135deg,var(--accent),#ea580c); color:white; box-shadow:0 4px 15px rgba(249,115,22,0.35); }
+.btn-primary:hover { transform:translateY(-1px); box-shadow:0 6px 20px rgba(249,115,22,0.45); }
+.btn-primary:active { transform:translateY(0); }
+.btn-ghost { background:var(--surface2); border:1px solid var(--border); color:var(--muted2); }
+.btn-ghost:hover { border-color:var(--accent); color:var(--accent); }
+.btn-danger  { background:linear-gradient(135deg,#dc2626,#b91c1c); color:white; border:none; }
+.btn-success { background:linear-gradient(135deg,var(--green),#059669); color:white; border:none; }
+.btn-sm { padding:8px 14px; border-radius:9px; font-size:12px; width:auto; }
+button { font-family:var(--font-body); }
+.list-item { padding:16px 0; border-bottom:1px solid var(--border); font-size:13px; line-height:1.8; }
+.list-item:last-child { border-bottom:none; }
+.list-meta { display:flex; justify-content:space-between; align-items:flex-start; gap:8px; }
+.list-name  { font-weight:600; font-size:14px; color:var(--text); }
+.list-value { font-family:var(--font-display); font-weight:700; font-size:14px; color:var(--green); white-space:nowrap; }
+.list-sub   { font-size:11px; color:var(--muted); margin-top:3px; }
+.tag { display:inline-block; padding:3px 9px; border-radius:20px; font-size:10px; font-weight:600; text-transform:uppercase; letter-spacing:0.4px; }
+.tag-orange { background:rgba(249,115,22,0.15); color:var(--accent); }
+.tag-red    { background:rgba(244,63,94,0.15);  color:var(--red); }
+.tag-green  { background:rgba(16,185,129,0.12); color:var(--green); }
+.tag-blue   { background:rgba(59,130,246,0.15); color:var(--blue); }
 .navbar {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  background: rgba(17,24,39,0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  padding: 10px 4px 16px;
-  border-top: 1px solid var(--border);
-  z-index: 100;
+  position:fixed; bottom:0; left:0; right:0; background:rgba(17,24,39,0.97);
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  display:flex; justify-content:space-around; align-items:center;
+  padding:10px 4px 16px; border-top:1px solid var(--border); z-index:100;
 }
 .nav-btn {
-  background: none;
-  border: none;
-  color: var(--muted);
-  font-size: 10px;
-  font-family: var(--font-body);
-  font-weight: 500;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  cursor: pointer;
-  transition: color 0.2s;
-  padding: 6px 8px;
-  border-radius: 12px;
-  min-width: 50px;
+  background:none; border:none; color:var(--muted); font-size:10px;
+  font-family:var(--font-body); font-weight:500; display:flex; flex-direction:column;
+  align-items:center; gap:4px; cursor:pointer; padding:6px 8px; border-radius:12px;
+  min-width:50px; transition:color 0.2s;
 }
-.nav-btn i { font-size: 17px; transition: transform 0.2s; }
-.nav-btn.active { color: var(--accent); }
-.nav-btn.active i { transform: scale(1.15); }
-.nav-btn:hover { color: var(--muted2); }
-
-/* ===== MISC ===== */
-.hidden { display: none !important; }
-.badge {
-  display: inline-block;
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
-.badge-pro { background: linear-gradient(135deg, rgba(249,115,22,0.2), rgba(234,88,12,0.1)); color: var(--accent); border: 1px solid rgba(249,115,22,0.3); }
-
-.fiado-extra { margin-top: 10px; }
-.section-divider {
-  height: 1px;
-  background: var(--border);
-  margin: 16px 0;
-}
-.empty-state {
-  text-align: center;
-  padding: 30px 20px;
-  color: var(--muted);
-  font-size: 13px;
-}
-.empty-state i { font-size: 32px; margin-bottom: 10px; opacity: 0.3; display: block; }
-
-/* ===== CHECKBOX ===== */
-.check-label {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-  font-size: 13px;
-  color: var(--muted2);
-  padding: 12px 0;
-}
-.check-label input[type=checkbox] {
-  width: 18px;
-  height: 18px;
-  border-radius: 5px;
-  accent-color: var(--accent);
-  cursor: pointer;
-}
-
-/* ===== SCREEN TITLE ===== */
-.screen-title {
-  font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: -0.5px;
-  margin-bottom: 18px;
-  color: var(--text);
-}
-.screen-title span { color: var(--accent); }
-
-/* ===== BACK BTN ===== */
-.back-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 18px;
-  cursor: pointer;
-  color: var(--muted2);
-  font-size: 13px;
-  font-weight: 500;
-}
-.back-row i { color: var(--accent); }
-.back-row:hover { color: var(--text); }
-
-/* ===== FORM ROW ===== */
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-/* ===== FIADO CARD ===== */
-.fiado-card {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 16px;
-  margin-bottom: 12px;
-  transition: border-color 0.2s;
-}
-.fiado-card:hover { border-color: rgba(249,115,22,0.3); }
-.fiado-header { display: flex; justify-content: space-between; align-items: flex-start; }
-.fiado-name { font-weight: 600; font-size: 14px; }
-.fiado-amount { font-family: var(--font-display); font-weight: 800; color: var(--red); font-size: 16px; }
-.fiado-details { font-size: 12px; color: var(--muted); margin-top: 6px; }
-.fiado-actions { margin-top: 12px; display: flex; gap: 8px; flex-wrap: wrap; }
-
-/* ===== ESTOQUE ITEM ===== */
-.estoque-item {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 16px;
-  margin-bottom: 12px;
-}
-.estoque-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
-.estoque-nome { font-weight: 600; font-size: 15px; font-family: var(--font-display); }
-.estoque-qtd {
-  background: rgba(59,130,246,0.15);
-  color: var(--blue);
-  padding: 4px 10px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 700;
-}
-.estoque-qtd.low {
-  background: rgba(244,63,94,0.15);
-  color: var(--red);
-}
-.estoque-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.estoque-stat { font-size: 11px; color: var(--muted); }
-.estoque-stat strong { display: block; font-size: 13px; color: var(--muted2); font-weight: 600; }
-
-/* ===== LOADING ===== */
-.loading-overlay {
-  position: fixed;
-  inset: 0;
-  background: var(--bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9998;
-  flex-direction: column;
-  gap: 16px;
-}
-.loading-spinner {
-  width: 40px; height: 40px;
-  border: 3px solid var(--border);
-  border-top-color: var(--accent);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-overlay p { color: var(--muted); font-size: 13px; }
-
-/* ===== ANIMATIONS ===== */
-@keyframes fadeUp {
-  from { opacity:0; transform: translateY(12px); }
-  to { opacity:1; transform: translateY(0); }
-}
-.container > div:not(.hidden) { animation: fadeUp 0.25s ease; }
-
-/* ===== TOAST ===== */
+.nav-btn i { font-size:17px; transition:transform 0.2s; }
+.nav-btn.active { color:var(--accent); }
+.nav-btn.active i { transform:scale(1.15); }
+.nav-btn:hover { color:var(--muted2); }
+.hidden { display:none !important; }
+.badge { display:inline-block; padding:6px 14px; border-radius:20px; font-size:12px; font-weight:600; letter-spacing:0.3px; }
+.badge-pro { background:linear-gradient(135deg,rgba(249,115,22,0.2),rgba(234,88,12,0.1)); color:var(--accent); border:1px solid rgba(249,115,22,0.3); }
+.fiado-extra { margin-top:10px; }
+.section-divider { height:1px; background:var(--border); margin:16px 0; }
+.empty-state { text-align:center; padding:30px 20px; color:var(--muted); font-size:13px; }
+.empty-state i { font-size:32px; margin-bottom:10px; opacity:0.3; display:block; }
+.check-label { display:flex; align-items:center; gap:10px; cursor:pointer; font-size:13px; color:var(--muted2); padding:12px 0; }
+.check-label input[type=checkbox] { width:18px; height:18px; accent-color:var(--accent); cursor:pointer; }
+.screen-title { font-family:var(--font-display); font-size:22px; font-weight:800; letter-spacing:-0.5px; margin-bottom:18px; color:var(--text); }
+.screen-title span { color:var(--accent); }
+.back-row { display:flex; align-items:center; gap:10px; margin-bottom:18px; cursor:pointer; color:var(--muted2); font-size:13px; font-weight:500; }
+.back-row i { color:var(--accent); }
+.back-row:hover { color:var(--text); }
+.form-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.fiado-card { background:var(--surface2); border:1px solid var(--border); border-radius:14px; padding:16px; margin-bottom:12px; transition:border-color 0.2s; }
+.fiado-card:hover { border-color:rgba(249,115,22,0.3); }
+.fiado-header { display:flex; justify-content:space-between; align-items:flex-start; }
+.fiado-name   { font-weight:600; font-size:14px; }
+.fiado-amount { font-family:var(--font-display); font-weight:800; color:var(--red); font-size:16px; }
+.fiado-details { font-size:12px; color:var(--muted); margin-top:6px; }
+.fiado-actions { margin-top:12px; }
+.estoque-item { background:var(--surface2); border:1px solid var(--border); border-radius:14px; padding:16px; margin-bottom:12px; }
+.estoque-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
+.estoque-nome { font-weight:600; font-size:15px; font-family:var(--font-display); }
+.estoque-qtd  { background:rgba(59,130,246,0.15); color:var(--blue); padding:4px 10px; border-radius:8px; font-size:12px; font-weight:700; }
+.estoque-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.estoque-stat { font-size:11px; color:var(--muted); }
+.estoque-stat strong { display:block; font-size:13px; color:var(--muted2); font-weight:600; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.container > div:not(.hidden) { animation:fadeUp 0.25s ease; }
 #toast {
-  position: fixed;
-  bottom: 100px;
-  left: 50%;
-  transform: translateX(-50%) translateY(20px);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 12px 22px;
-  border-radius: 30px;
-  font-size: 13px;
-  font-weight: 500;
-  opacity: 0;
-  transition: all 0.3s;
-  z-index: 9999;
-  white-space: nowrap;
-  pointer-events: none;
+  position:fixed; bottom:100px; left:50%; transform:translateX(-50%) translateY(20px);
+  background:var(--surface); border:1px solid var(--border); color:var(--text);
+  padding:12px 22px; border-radius:30px; font-size:13px; font-weight:500;
+  opacity:0; transition:all 0.3s; z-index:9999; white-space:nowrap; pointer-events:none;
 }
-#toast.show {
-  opacity: 1;
-  transform: translateX(-50%) translateY(0);
-}
-#toast.success { border-color: rgba(16,185,129,0.4); color: var(--green); }
-#toast.error { border-color: rgba(244,63,94,0.4); color: var(--red); }
-
-/* ===== LOGOUT ===== */
-.logout-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(244,63,94,0.1);
-  border: 1px solid rgba(244,63,94,0.2);
-  color: var(--red);
-  padding: 12px 16px;
-  border-radius: 12px;
-  width: 100%;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 600;
-  transition: all 0.2s;
-  margin-top: 8px;
-}
-.logout-btn:hover { background: rgba(244,63,94,0.18); }
+#toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+#toast.success { border-color:rgba(16,185,129,0.4); color:var(--green); }
+#toast.error   { border-color:rgba(244,63,94,0.4);  color:var(--red); }
 </style>
 </head>
 <body>
 
-<!-- LOADING -->
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="loading-spinner"></div>
-  <p>A carregar dados...</p>
-</div>
-
 <header>
   <div class="header-left">
     <h1 id="saudacao">Olá <span>👋</span></h1>
-    <p id="subtituloNegocio">Controle total do seu negócio</p>
+    <p>Controle total do seu negócio</p>
   </div>
   <div class="header-logo">GP</div>
 </header>
@@ -516,39 +195,11 @@ button { font-family: var(--font-body); }
 <div id="dashboard">
   <p class="screen-title">Dashboard <span>•</span></p>
   <div class="summary">
-    <div class="box blue">
-      <i class="fa fa-chart-line box-icon"></i>
-      Vendas Hoje
-      <strong id="totalVendas">0 MT</strong>
-    </div>
-    <div class="box red">
-      <i class="fa fa-receipt box-icon"></i>
-      Despesas Hoje
-      <strong id="totalDespesas">0 MT</strong>
-    </div>
-    <div class="box green full">
-      <i class="fa fa-coins box-icon"></i>
-      Lucro de Hoje
-      <strong id="lucro">0 MT</strong>
-    </div>
-    <div class="box orange">
-      <i class="fa fa-calendar box-icon"></i>
-      Lucro Mensal Est.
-      <strong id="lucroMensalTotal">0 MT</strong>
-    </div>
-    <div class="box green">
-      <i class="fa fa-trophy box-icon"></i>
-      Lucro no Mês
-      <strong id="lucroMesReal">0 MT</strong>
-    </div>
-  </div>
-
-  <!-- Resumo rápido fiados -->
-  <div class="card" style="margin-top:14px;">
-    <h3><i class="fa fa-user-clock" style="color:var(--accent);margin-right:8px;"></i>Fiados em Aberto</h3>
-    <div id="dashFiadoResumo">
-      <div class="empty-state" style="padding:14px 0;"><i class="fa fa-check-circle" style="font-size:20px;"></i>Nenhum fiado pendente</div>
-    </div>
+    <div class="box blue"><i class="fa fa-chart-line box-icon"></i>Vendas Hoje<strong id="totalVendas">0.00 MT</strong></div>
+    <div class="box red"><i class="fa fa-receipt box-icon"></i>Despesas Hoje<strong id="totalDespesas">0.00 MT</strong></div>
+    <div class="box green full"><i class="fa fa-coins box-icon"></i>Lucro de Hoje<strong id="lucro">0.00 MT</strong></div>
+    <div class="box orange"><i class="fa fa-calendar box-icon"></i>Lucro Mensal Est.<strong id="lucroMensalTotal">0.00 MT</strong></div>
+    <div class="box green"><i class="fa fa-trophy box-icon"></i>Lucro no Mês<strong id="lucroMesReal">0.00 MT</strong></div>
   </div>
 </div>
 
@@ -559,8 +210,7 @@ button { font-family: var(--font-body); }
     <h3><i class="fa fa-plus" style="color:var(--accent);margin-right:8px;"></i>Nova Venda</h3>
     <div class="form-group">
       <label>Produto</label>
-      <input type="text" id="produto" placeholder="Nome do produto" list="sugestoesProdutos" autocomplete="off">
-      <datalist id="sugestoesProdutos"></datalist>
+      <input type="text" id="produto" placeholder="Nome do produto">
     </div>
     <div class="form-row">
       <div class="form-group">
@@ -633,9 +283,7 @@ button { font-family: var(--font-body); }
   <p class="screen-title">Fiados</p>
   <div class="card">
     <h3><i class="fa fa-user-clock" style="color:var(--accent);margin-right:8px;"></i>Pendentes</h3>
-    <div id="listaFiado">
-      <div class="empty-state"><i class="fa fa-check-circle"></i>Sem fiados pendentes</div>
-    </div>
+    <div id="listaFiado"><div class="empty-state"><i class="fa fa-check-circle"></i>Sem fiados pendentes</div></div>
   </div>
 </div>
 
@@ -645,21 +293,9 @@ button { font-family: var(--font-body); }
   <div class="card">
     <h3><i class="fa fa-chart-pie" style="color:var(--accent);margin-right:8px;"></i>Resumo</h3>
     <div class="summary">
-      <div class="box blue">
-        <i class="fa fa-box box-icon"></i>
-        Investimento Total
-        <strong id="investimentoTotal">0 MT</strong>
-      </div>
-      <div class="box green">
-        <i class="fa fa-arrow-trend-up box-icon"></i>
-        Lucro Potencial
-        <strong id="lucroPotencial">0 MT</strong>
-      </div>
-      <div class="box orange full">
-        <i class="fa fa-calendar-check box-icon"></i>
-        Lucro Mensal Estimado
-        <strong id="lucroMensal">0 MT</strong>
-      </div>
+      <div class="box blue"><i class="fa fa-box box-icon"></i>Investimento Total<strong id="investimentoTotal">0.00 MT</strong></div>
+      <div class="box green"><i class="fa fa-arrow-trend-up box-icon"></i>Lucro Potencial<strong id="lucroPotencial">0.00 MT</strong></div>
+      <div class="box orange full"><i class="fa fa-calendar-check box-icon"></i>Lucro Mensal Estimado<strong id="lucroMensal">0.00 MT</strong></div>
     </div>
   </div>
   <div class="card">
@@ -671,7 +307,7 @@ button { font-family: var(--font-body); }
     <div class="form-row">
       <div class="form-group">
         <label>Tipo de Compra</label>
-        <select id="tipoCompra" onchange="toggleCaixaField()">
+        <select id="tipoCompra">
           <option value="unidade">Unidade</option>
           <option value="caixa">Caixa</option>
           <option value="fardo">Fardo</option>
@@ -682,20 +318,14 @@ button { font-family: var(--font-body); }
         <input type="number" id="quantidadeCompra" placeholder="Qtd" min="1">
       </div>
     </div>
-    <div class="form-row" id="caixaRow">
+    <div class="form-row">
       <div class="form-group">
-        <label>Unid. por Caixa/Fardo</label>
-        <input type="number" id="quantidadePorCaixa" placeholder="Ex: 12">
+        <label>Unid. por Caixa</label>
+        <input type="number" id="quantidadePorCaixa" placeholder="Se aplicável" min="1">
       </div>
       <div class="form-group">
         <label>Preço Compra (MT)</label>
         <input type="number" id="precoCompra" placeholder="0.00" min="0" step="0.01">
-      </div>
-    </div>
-    <div class="form-row" id="caixaRowAlt" style="display:none;">
-      <div class="form-group" style="grid-column:1/-1;">
-        <label>Preço Compra (MT)</label>
-        <input type="number" id="precoCompraUnidade" placeholder="0.00" min="0" step="0.01">
       </div>
     </div>
     <div class="form-row">
@@ -740,551 +370,519 @@ button { font-family: var(--font-body); }
     <div class="badge badge-pro">✦ Plano Básico</div>
     <p style="font-size:12px;color:var(--muted);margin-top:12px;">Faça upgrade para desbloquear relatórios avançados e exportação de dados.</p>
   </div>
-  <div class="card">
-    <h3><i class="fa fa-shield-halved" style="color:var(--accent);margin-right:8px;"></i>Conta</h3>
-    <button class="logout-btn" onclick="fazerLogout()">
-      <i class="fa fa-right-from-bracket"></i> Terminar Sessão
-    </button>
-  </div>
 </div>
 
 <!-- TELAS SECUNDÁRIAS -->
-<!-- Estoque Completo -->
 <div id="estoqueCompleto" class="hidden">
-  <div class="back-row" onclick="mudarTela('estoque', null)">
-    <i class="fa fa-arrow-left"></i> Voltar ao Estoque
-  </div>
+  <div class="back-row" onclick="mudarTela('estoque',null)"><i class="fa fa-arrow-left"></i> Voltar ao Estoque</div>
   <p class="screen-title">Todos os Produtos</p>
   <div id="listaEstoqueCompleto"></div>
 </div>
-
-<!-- Histórico de Vendas -->
 <div id="historicoVendas" class="hidden">
-  <div class="back-row" onclick="mudarTela('vendas', null)">
-    <i class="fa fa-arrow-left"></i> Voltar a Vendas
-  </div>
+  <div class="back-row" onclick="mudarTela('vendas',null)"><i class="fa fa-arrow-left"></i> Voltar a Vendas</div>
   <p class="screen-title">Histórico de Vendas</p>
   <div id="listaHistoricoVendas"></div>
 </div>
-
-<!-- Histórico de Despesas -->
 <div id="historicoDespesas" class="hidden">
-  <div class="back-row" onclick="mudarTela('despesas', null)">
-    <i class="fa fa-arrow-left"></i> Voltar a Despesas
-  </div>
+  <div class="back-row" onclick="mudarTela('despesas',null)"><i class="fa fa-arrow-left"></i> Voltar a Despesas</div>
   <p class="screen-title">Histórico de Despesas</p>
   <div id="listaHistoricoDespesas"></div>
 </div>
 
-</div><!-- end container -->
+</div><!-- /container -->
 
-<!-- TOAST -->
 <div id="toast"></div>
 
-<!-- NAVBAR -->
 <div class="navbar">
-  <button class="nav-btn active" id="navDashboard" onclick="mudarTela('dashboard',this)"><i class="fa fa-home"></i>Início</button>
-  <button class="nav-btn" id="navVendas" onclick="mudarTela('vendas',this)"><i class="fa fa-cart-plus"></i>Vendas</button>
-  <button class="nav-btn" id="navDespesas" onclick="mudarTela('despesas',this)"><i class="fa fa-receipt"></i>Despesas</button>
-  <button class="nav-btn" id="navFiado" onclick="mudarTela('fiado',this)"><i class="fa fa-user-clock"></i>Fiado</button>
-  <button class="nav-btn" id="navEstoque" onclick="mudarTela('estoque',this)"><i class="fa fa-boxes"></i>Estoque</button>
-  <button class="nav-btn" id="navDefinicoes" onclick="mudarTela('definicoes',this)"><i class="fa fa-cog"></i>Config</button>
+  <button class="nav-btn active" onclick="mudarTela('dashboard',this)"><i class="fa fa-home"></i>Início</button>
+  <button class="nav-btn" onclick="mudarTela('vendas',this)"><i class="fa fa-cart-plus"></i>Vendas</button>
+  <button class="nav-btn" onclick="mudarTela('despesas',this)"><i class="fa fa-receipt"></i>Despesas</button>
+  <button class="nav-btn" onclick="mudarTela('fiado',this)"><i class="fa fa-user-clock"></i>Fiado</button>
+  <button class="nav-btn" onclick="mudarTela('estoque',this)"><i class="fa fa-boxes"></i>Estoque</button>
+  <button class="nav-btn" onclick="mudarTela('definicoes',this)"><i class="fa fa-cog"></i>Config</button>
 </div>
 
-<!-- Firebase SDK v9 compat (versão correta e consistente) -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
 <script>
-// ===== FIREBASE CONFIG =====
-const firebaseConfig = {
+// ─────────────────────────────────────────────
+// FIREBASE
+// ─────────────────────────────────────────────
+firebase.initializeApp({
   apiKey: "AIzaSyDrFZ5LDIulhQlsurXs0GWP4QvJ6O2rq4A",
   authDomain: "meu-26dbf.firebaseapp.com",
   projectId: "meu-26dbf",
   storageBucket: "meu-26dbf.firebasestorage.app",
   messagingSenderId: "561029322629",
   appId: "1:561029322629:web:7dda91ab2ff7aec60596ec"
-};
-
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-// Fix para GitHub Pages — troca WebSockets por HTTP polling
-db.settings({ experimentalForceLongPolling: true, merge: true });
+});
+const db   = firebase.firestore();
 const auth = firebase.auth();
 
-// ===== STATE =====
-let vendas = [], despesas = [], estoque = [];
-let perfil = { nome: "Usuário", negocio: "Meu Negócio", email: "" };
-let unsubVendas, unsubDespesas, unsubEstoque;
+// ─────────────────────────────────────────────
+// ESTADO GLOBAL
+// ─────────────────────────────────────────────
+let UID      = null;          // definido após auth
+let vendas   = [];
+let despesas = [];
+let estoque  = [];
+let perfil   = { nome: "Usuário", negocio: "Meu Negócio", email: "" };
 
-// ===== AUTH =====
+// ─────────────────────────────────────────────
+// UTILITÁRIOS
+// ─────────────────────────────────────────────
+// Formata número com 2 casas decimais + " MT"
+// Nunca lança erro mesmo se n for undefined/NaN
+function fmt(n) {
+  const v = parseFloat(n);
+  return (isNaN(v) ? 0 : v).toFixed(2) + " MT";
+}
+
+// Retorna a data de hoje no formato YYYY-MM-DD (fuso local)
+function dataHoje() {
+  const d = new Date();
+  return d.getFullYear() + "-"
+    + String(d.getMonth()+1).padStart(2,"0") + "-"
+    + String(d.getDate()).padStart(2,"0");
+}
+
+// Toast
+function showToast(msg, type = "success") {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.className = "show " + type;
+  clearTimeout(t._t);
+  t._t = setTimeout(() => { t.className = ""; }, 2800);
+}
+
+// ─────────────────────────────────────────────
+// AUTH — ponto de entrada único
+// ─────────────────────────────────────────────
 auth.onAuthStateChanged(async user => {
-  if (!user) {
-    window.location.href = "index.html";
-    return;
-  }
-  await carregarDados(user.uid);
-  document.getElementById("loadingOverlay").style.display = "none";
+  if (!user) { window.location.href = "index.html"; return; }
+  UID = user.uid;
+  await carregarPerfil();
+  iniciarListeners();
 });
 
-// ===== LOGOUT =====
-function fazerLogout() {
-  if (unsubVendas) unsubVendas();
-  if (unsubDespesas) unsubDespesas();
-  if (unsubEstoque) unsubEstoque();
-  auth.signOut().then(() => { window.location.href = "index.html"; });
+// ─────────────────────────────────────────────
+// PERFIL
+// ─────────────────────────────────────────────
+async function carregarPerfil() {
+  try {
+    const doc = await db.collection("usuarios").doc(UID).get();
+    if (doc.exists && doc.data().perfil) perfil = doc.data().perfil;
+  } catch (e) { console.warn("carregarPerfil:", e); }
+  atualizarSaudacao();
+  document.getElementById("nomeUsuario").value  = perfil.nome    || "";
+  document.getElementById("nomeNegocio").value  = perfil.negocio || "";
+  document.getElementById("emailNegocio").value = perfil.email   || "";
 }
 
-// ===== TOAST =====
-function showToast(msg, type = 'success') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'show ' + type;
-  setTimeout(() => { t.className = ''; }, 2800);
+function atualizarSaudacao() {
+  document.getElementById("saudacao").innerHTML = `Olá, ${perfil.nome} <span>👋</span>`;
 }
 
-// ===== TOGGLE FIADO =====
+async function salvarPerfil() {
+  const nome    = document.getElementById("nomeUsuario").value.trim();
+  const negocio = document.getElementById("nomeNegocio").value.trim();
+  const email   = document.getElementById("emailNegocio").value.trim();
+  if (nome)    perfil.nome    = nome;
+  if (negocio) perfil.negocio = negocio;
+  if (email)   perfil.email   = email;
+  try {
+    await db.collection("usuarios").doc(UID).set({ perfil }, { merge: true });
+    atualizarSaudacao();
+    showToast("✓ Perfil guardado!");
+  } catch (e) {
+    console.error("salvarPerfil:", e);
+    showToast("Erro ao guardar perfil.", "error");
+  }
+}
+
+// ─────────────────────────────────────────────
+// LISTENERS EM TEMPO REAL
+// SEM orderBy — evita exigência de índice composto no Firestore.
+// Ordenação feita no cliente depois.
+// ─────────────────────────────────────────────
+function iniciarListeners() {
+  const base = db.collection("usuarios").doc(UID);
+
+  base.collection("vendas").onSnapshot(snap => {
+    vendas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    // Mais recente primeiro
+    vendas.sort((a, b) => (b.data || "").localeCompare(a.data || ""));
+    atualizarDashboard();
+    renderFiados();
+  }, e => console.error("listener vendas:", e));
+
+  base.collection("despesas").onSnapshot(snap => {
+    despesas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    despesas.sort((a, b) => (b.data || "").localeCompare(a.data || ""));
+    atualizarDashboard();
+    atualizarResumoEstoque();
+  }, e => console.error("listener despesas:", e));
+
+  base.collection("estoque").onSnapshot(snap => {
+    estoque = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    estoque.sort((a, b) => (a.nome || "").localeCompare(b.nome || ""));
+    atualizarResumoEstoque();
+  }, e => console.error("listener estoque:", e));
+}
+
+// ─────────────────────────────────────────────
+// DASHBOARD
+// ─────────────────────────────────────────────
+function atualizarDashboard() {
+  const hoje = dataHoje();
+
+  // Vendas pagas hoje (fiado não conta enquanto não for pago)
+  const vHoje = vendas.filter(v => v.data === hoje && (v.pagamento !== "Fiado" || v.pago));
+  const totalVendas   = vHoje.reduce((s, v) => s + (v.valor  || 0), 0);
+  const lucroHoje     = vHoje.reduce((s, v) => s + ((v.valor || 0) - (v.custo || 0)), 0);
+
+  // Despesas registadas HOJE (não soma todas do histórico)
+  const totalDespesas = despesas
+    .filter(d => d.data === hoje)
+    .reduce((s, d) => s + (d.valor || 0), 0);
+
+  document.getElementById("totalVendas").innerText   = fmt(totalVendas);
+  document.getElementById("totalDespesas").innerText = fmt(totalDespesas);
+  document.getElementById("lucro").innerText         = fmt(lucroHoje - totalDespesas);
+
+  // Lucro mensal estimado = (vendas mensais estimadas × margem) − despesas fixas mensais
+  const lucroEstimado = estoque.reduce((s, p) =>
+    s + (p.vendasMensais || 0) * ((p.precoVenda || 0) - (p.precoCompra || 0)), 0);
+  const despMensais = despesas
+    .filter(d => d.mensal)
+    .reduce((s, d) => s + (d.valor || 0), 0);
+  document.getElementById("lucroMensalTotal").innerText = fmt(lucroEstimado - despMensais);
+
+  // Lucro acumulado real no mês corrente
+  const agora = new Date();
+  const vMes = vendas.filter(v => {
+    if (!v.data) return false;
+    // Parse seguro: YYYY-MM-DD → sem problema de fuso
+    const [ano, mes, dia] = v.data.split("-").map(Number);
+    return mes - 1 === agora.getMonth()
+        && ano === agora.getFullYear()
+        && (v.pagamento !== "Fiado" || v.pago);
+  });
+  document.getElementById("lucroMesReal").innerText = fmt(
+    vMes.reduce((s, v) => s + ((v.valor || 0) - (v.custo || 0)), 0)
+  );
+}
+
+// ─────────────────────────────────────────────
+// ESTOQUE — resumo nos cards
+// ─────────────────────────────────────────────
+function atualizarResumoEstoque() {
+  const inv  = estoque.reduce((s, p) => s + (p.qtdInicial || 0) * (p.precoCompra || 0), 0);
+  const pot  = estoque.reduce((s, p) => s + (p.qtdInicial || 0) * ((p.precoVenda || 0) - (p.precoCompra || 0)), 0);
+  const mens = estoque.reduce((s, p) => s + (p.vendasMensais || 0) * ((p.precoVenda || 0) - (p.precoCompra || 0)), 0);
+  const despMensais = despesas.filter(d => d.mensal).reduce((s, d) => s + (d.valor || 0), 0);
+  document.getElementById("investimentoTotal").innerText = fmt(inv);
+  document.getElementById("lucroPotencial").innerText    = fmt(pot);
+  document.getElementById("lucroMensal").innerText       = fmt(mens - despMensais);
+}
+
+// ─────────────────────────────────────────────
+// VENDAS
+// ─────────────────────────────────────────────
 function toggleFiado() {
-  const extra = document.getElementById("fiadoExtra");
-  extra.classList.toggle("hidden", document.getElementById("pagamento").value !== "Fiado");
+  document.getElementById("fiadoExtra").classList.toggle(
+    "hidden", document.getElementById("pagamento").value !== "Fiado"
+  );
 }
 
-// ===== TOGGLE CAIXA FIELD =====
-function toggleCaixaField() {
-  const tipo = document.getElementById("tipoCompra").value;
-  const isCaixa = tipo === "caixa" || tipo === "fardo";
-  document.getElementById("caixaRow").style.display = isCaixa ? "" : "none";
-  document.getElementById("caixaRowAlt").style.display = isCaixa ? "none" : "";
-}
-toggleCaixaField();
+async function registrarVenda() {
+  const produtoNome = document.getElementById("produto").value.trim();
+  const valorStr    = document.getElementById("valorVenda").value;
+  const valor       = parseFloat(valorStr);
+  const pagamento   = document.getElementById("pagamento").value;
 
-// ===== ADICIONAR PRODUTO =====
-function adicionarProduto() {
-  const nome = document.getElementById("nomeProduto").value.trim();
-  const tipo = document.getElementById("tipoCompra").value;
-  const qtd = parseInt(document.getElementById("quantidadeCompra").value);
-  const isCaixa = tipo === "caixa" || tipo === "fardo";
-  const qtdPorCaixa = isCaixa ? (parseInt(document.getElementById("quantidadePorCaixa").value) || 1) : 1;
-  const precoCompraRaw = isCaixa
-    ? parseFloat(document.getElementById("precoCompra").value)
-    : parseFloat(document.getElementById("precoCompraUnidade").value);
-  const precoVenda = parseFloat(document.getElementById("precoVenda").value);
-  const vendasMensais = parseInt(document.getElementById("vendasMensais").value) || 0;
+  if (!produtoNome)            { showToast("Informe o nome do produto!", "error"); return; }
+  if (!valorStr || valor <= 0) { showToast("Informe um valor válido!", "error");   return; }
 
-  if (!nome || !qtd || isNaN(precoCompraRaw) || isNaN(precoVenda)) {
-    showToast("Preencha todos os campos obrigatórios!", "error"); return;
-  }
-  if (precoVenda <= precoCompraRaw / (isCaixa ? qtdPorCaixa : 1)) {
-    showToast("⚠️ Preço de venda menor que custo!", "error"); return;
+  // Custo: busca no array local (já populado pelo listener)
+  // Se o array ainda estiver vazio (primeira abertura), tenta Firestore directamente
+  let item = estoque.find(p => p.nome.toLowerCase() === produtoNome.toLowerCase());
+  if (!item && estoque.length === 0) {
+    try {
+      const snap = await db.collection("usuarios").doc(UID)
+        .collection("estoque").where("nome", "==", produtoNome).limit(1).get();
+      if (!snap.empty) item = { id: snap.docs[0].id, ...snap.docs[0].data() };
+    } catch (e) { /* sem estoque = custo 0 */ }
   }
 
-  const precoCompraUnidade = isCaixa ? precoCompraRaw / qtdPorCaixa : precoCompraRaw;
-  const totalUnidades = isCaixa ? qtd * qtdPorCaixa : qtd;
-
-  const produto = {
-    nome, tipo,
-    qtd: totalUnidades,
-    qtdInicial: totalUnidades,
-    precoCompra: precoCompraUnidade,
-    precoVenda,
-    vendasMensais
+  const venda = {
+    produto:   produtoNome,
+    valor:     valor,
+    custo:     item ? (item.precoCompra || 0) : 0,
+    pagamento: pagamento,
+    pago:      true,
+    data:      dataHoje()
   };
 
-  const user = auth.currentUser;
-  const ref = db.collection("usuarios").doc(user.uid).collection("estoque").doc();
-  produto.id = ref.id;
-  ref.set(produto).then(() => {
-    showToast("✓ Produto adicionado ao estoque!");
-    // Limpar campos
-    ["nomeProduto", "quantidadeCompra", "quantidadePorCaixa", "precoCompra", "precoCompraUnidade", "precoVenda", "vendasMensais"].forEach(id => {
-      const el = document.getElementById(id); if (el) el.value = "";
-    });
-    document.getElementById("tipoCompra").value = "unidade";
-    toggleCaixaField();
-  }).catch(err => showToast("Erro ao salvar: " + err.message, "error"));
-}
-
-// ===== ATUALIZAR SUGESTÕES PRODUTOS =====
-function atualizarSugestoesProdutos() {
-  const datalist = document.getElementById("sugestoesProdutos");
-  datalist.innerHTML = estoque.map(p => `<option value="${p.nome}">`).join("");
-}
-
-// ===== LISTA ESTOQUE COMPLETO =====
-function atualizarListaEstoqueCompleto() {
-  const container = document.getElementById("listaEstoqueCompleto");
-  if (!estoque.length) {
-    container.innerHTML = '<div class="empty-state"><i class="fa fa-box-open"></i>Nenhum produto no estoque</div>';
-    return;
+  // Dados extras para fiado
+  if (pagamento === "Fiado") {
+    const nome    = document.getElementById("nomeDevedor").value.trim();
+    const contato = document.getElementById("contatoDevedor").value.trim();
+    const prazo   = document.getElementById("dataPagamento").value;
+    if (!nome || !contato || !prazo) { showToast("Preencha os dados do fiado!", "error"); return; }
+    venda.pago    = false;
+    venda.devedor = { nome, contato, dataPagamento: prazo };
   }
-  container.innerHTML = estoque.map((p, i) => {
-    const lucroUnidade = p.precoVenda - p.precoCompra;
-    const lucroTotal = p.qtdInicial * lucroUnidade;
-    const lucroMensalProd = p.vendasMensais * lucroUnidade;
-    const investimentoProduto = p.qtdInicial * p.precoCompra;
-    const isLow = p.qtd <= 5;
+
+  try {
+    // Grava venda — o listener onSnapshot actualiza o array automaticamente
+    await db.collection("usuarios").doc(UID).collection("vendas").add(venda);
+
+    // Desconta 1 unidade do estoque (só se venda está paga agora)
+    if (item && venda.pago) {
+      const novaQtd = Math.max(0, (item.qtd || 0) - 1);
+      await db.collection("usuarios").doc(UID)
+        .collection("estoque").doc(item.id).update({ qtd: novaQtd });
+    }
+
+    // Limpa formulário
+    document.getElementById("produto").value      = "";
+    document.getElementById("valorVenda").value   = "";
+    document.getElementById("pagamento").value    = "Dinheiro";
+    document.getElementById("nomeDevedor").value  = "";
+    document.getElementById("contatoDevedor").value = "";
+    document.getElementById("dataPagamento").value  = "";
+    document.getElementById("fiadoExtra").classList.add("hidden");
+
+    showToast("✓ Venda registada com sucesso!");
+  } catch (e) {
+    console.error("registrarVenda:", e);
+    showToast("Erro ao guardar venda. Verifique a ligação.", "error");
+  }
+}
+
+// ─────────────────────────────────────────────
+// DESPESAS
+// ─────────────────────────────────────────────
+async function registrarDespesa() {
+  const tipo   = document.getElementById("tipoDespesa").value.trim();
+  const valorStr = document.getElementById("valorDespesa").value;
+  const valor  = parseFloat(valorStr);
+  const mensal = document.getElementById("mensalDespesa").checked;
+
+  if (!tipo)                { showToast("Informe o tipo de despesa!", "error"); return; }
+  if (!valorStr || valor <= 0) { showToast("Informe um valor válido!", "error");   return; }
+
+  try {
+    await db.collection("usuarios").doc(UID).collection("despesas").add({
+      tipo, valor, mensal, data: dataHoje()
+    });
+    document.getElementById("tipoDespesa").value    = "";
+    document.getElementById("valorDespesa").value   = "";
+    document.getElementById("mensalDespesa").checked = false;
+    showToast("✓ Despesa registada!");
+  } catch (e) {
+    console.error("registrarDespesa:", e);
+    showToast("Erro ao guardar despesa.", "error");
+  }
+}
+
+// ─────────────────────────────────────────────
+// FIADOS
+// ─────────────────────────────────────────────
+function renderFiados() {
+  const pendentes = vendas.filter(v => v.pagamento === "Fiado" && !v.pago);
+  const el = document.getElementById("listaFiado");
+  if (!pendentes.length) {
+    el.innerHTML = '<div class="empty-state"><i class="fa fa-check-circle"></i>Sem fiados pendentes</div>'; return;
+  }
+  el.innerHTML = pendentes.map(f => `
+    <div class="fiado-card">
+      <div class="fiado-header">
+        <div>
+          <div class="fiado-name">👤 ${f.devedor.nome}</div>
+          <div class="list-sub">${f.produto} · ${f.devedor.contato}</div>
+        </div>
+        <div class="fiado-amount">${fmt(f.valor)}</div>
+      </div>
+      <div class="fiado-details">📅 Prazo: ${f.devedor.dataPagamento}</div>
+      <div class="fiado-actions">
+        <button class="btn btn-success btn-sm"
+          onclick="marcarComoPago('${f.id}','${f.produto}')">
+          <i class="fa fa-check"></i> Marcar como Pago
+        </button>
+      </div>
+    </div>`).join("");
+}
+
+async function marcarComoPago(vendaId, produtoNome) {
+  try {
+    // 1. Marca venda como paga
+    await db.collection("usuarios").doc(UID)
+      .collection("vendas").doc(vendaId).update({ pago: true });
+
+    // 2. Desconta estoque agora que o dinheiro entrou
+    const item = estoque.find(p => p.nome.toLowerCase() === produtoNome.toLowerCase());
+    if (item) {
+      await db.collection("usuarios").doc(UID)
+        .collection("estoque").doc(item.id)
+        .update({ qtd: Math.max(0, (item.qtd || 0) - 1) });
+    }
+    showToast("✓ Fiado marcado como pago!");
+    // listener onSnapshot actualiza tudo automaticamente
+  } catch (e) {
+    console.error("marcarComoPago:", e);
+    showToast("Erro ao actualizar fiado.", "error");
+  }
+}
+
+// ─────────────────────────────────────────────
+// ESTOQUE — adicionar / remover / listar
+// ─────────────────────────────────────────────
+async function adicionarProduto() {
+  const nome          = document.getElementById("nomeProduto").value.trim();
+  const tipo          = document.getElementById("tipoCompra").value;
+  const qtdInput      = parseInt(document.getElementById("quantidadeCompra").value);
+  const qtdPorCaixa   = parseInt(document.getElementById("quantidadePorCaixa").value) || 1;
+  const precoCompra   = parseFloat(document.getElementById("precoCompra").value);
+  const precoVenda    = parseFloat(document.getElementById("precoVenda").value);
+  const vendasMensais = parseInt(document.getElementById("vendasMensais").value)  || 0;
+
+  if (!nome)               { showToast("Informe o nome do produto!", "error"); return; }
+  if (!qtdInput || qtdInput < 1) { showToast("Quantidade inválida!", "error");       return; }
+  if (!precoCompra || precoCompra <= 0) { showToast("Preço de compra inválido!", "error"); return; }
+  if (!precoVenda  || precoVenda  <= 0) { showToast("Preço de venda inválido!", "error");  return; }
+
+  const precoUni  = (tipo === "caixa" || tipo === "fardo") ? precoCompra / qtdPorCaixa : precoCompra;
+  const totalUnid = (tipo === "caixa" || tipo === "fardo") ? qtdInput * qtdPorCaixa    : qtdInput;
+
+  try {
+    await db.collection("usuarios").doc(UID).collection("estoque").add({
+      nome, tipo,
+      qtd: totalUnid, qtdInicial: totalUnid,
+      precoCompra: precoUni, precoVenda, vendasMensais
+    });
+    ["nomeProduto","quantidadeCompra","quantidadePorCaixa","precoCompra","precoVenda","vendasMensais"]
+      .forEach(id => { document.getElementById(id).value = ""; });
+    showToast("✓ Produto adicionado ao estoque!");
+    // listener onSnapshot actualiza o array e o resumo automaticamente
+  } catch (e) {
+    console.error("adicionarProduto:", e);
+    showToast("Erro ao adicionar produto.", "error");
+  }
+}
+
+// Usa o docId do Firestore — não depende do índice do array
+async function removerProduto(docId) {
+  if (!confirm("Remover este produto do estoque?")) return;
+  try {
+    await db.collection("usuarios").doc(UID).collection("estoque").doc(docId).delete();
+    showToast("Produto removido.");
+    // onSnapshot actualiza o array e re-renderiza se a tela estiver aberta
+    atualizarListaEstoqueCompleto();
+  } catch (e) {
+    console.error("removerProduto:", e);
+    showToast("Erro ao remover produto.", "error");
+  }
+}
+
+// ─────────────────────────────────────────────
+// HISTÓRICOS — render na hora de abrir
+// ─────────────────────────────────────────────
+function abrirEstoqueCompleto()   { atualizarListaEstoqueCompleto(); mudarTela("estoqueCompleto",  null); }
+function abrirHistoricoVendas()   { renderHistoricoVendas();          mudarTela("historicoVendas",   null); }
+function abrirHistoricoDespesas() { renderHistoricoDespesas();        mudarTela("historicoDespesas", null); }
+
+function atualizarListaEstoqueCompleto() {
+  const el = document.getElementById("listaEstoqueCompleto");
+  if (!estoque.length) {
+    el.innerHTML = '<div class="empty-state"><i class="fa fa-box-open"></i>Nenhum produto no estoque</div>'; return;
+  }
+  el.innerHTML = estoque.map(p => {
+    const lu = (p.precoVenda || 0) - (p.precoCompra || 0);
     return `<div class="estoque-item">
       <div class="estoque-header">
         <span class="estoque-nome">${p.nome}</span>
-        <span class="estoque-qtd ${isLow ? 'low' : ''}">${p.qtd} unid.${isLow ? ' ⚠️' : ''}</span>
+        <span class="estoque-qtd">${p.qtd ?? 0} unid.</span>
       </div>
       <div class="estoque-grid">
-        <div class="estoque-stat">Preço Compra<strong>${p.precoCompra.toFixed(2)} MT</strong></div>
-        <div class="estoque-stat">Preço Venda<strong>${p.precoVenda.toFixed(2)} MT</strong></div>
-        <div class="estoque-stat">Lucro/unidade<strong style="color:var(--green)">${lucroUnidade.toFixed(2)} MT</strong></div>
-        <div class="estoque-stat">Investimento<strong>${investimentoProduto.toFixed(2)} MT</strong></div>
-        <div class="estoque-stat">Lucro Potencial<strong style="color:var(--green)">${lucroTotal.toFixed(2)} MT</strong></div>
-        <div class="estoque-stat">Lucro/mês est.<strong style="color:var(--accent)">${lucroMensalProd.toFixed(2)} MT</strong></div>
+        <div class="estoque-stat">Preço Compra<strong>${fmt(p.precoCompra)}</strong></div>
+        <div class="estoque-stat">Preço Venda<strong>${fmt(p.precoVenda)}</strong></div>
+        <div class="estoque-stat">Lucro/unid.<strong style="color:var(--green)">${fmt(lu)}</strong></div>
+        <div class="estoque-stat">Investimento<strong>${fmt((p.qtdInicial||0)*(p.precoCompra||0))}</strong></div>
+        <div class="estoque-stat">Lucro Total<strong style="color:var(--green)">${fmt((p.qtdInicial||0)*lu)}</strong></div>
+        <div class="estoque-stat">Lucro/mês est.<strong style="color:var(--accent)">${fmt((p.vendasMensais||0)*lu)}</strong></div>
       </div>
-      <button class="btn btn-danger btn-sm" style="margin-top:12px;" onclick="removerProduto('${p.id}')">
+      <button class="btn btn-danger btn-sm" style="margin-top:12px;"
+        onclick="removerProduto('${p.id}')">
         <i class="fa fa-trash"></i> Remover
       </button>
     </div>`;
   }).join("");
 }
 
-// ===== REMOVER PRODUTO =====
-async function removerProduto(prodId) {
-  const user = auth.currentUser;
-  await db.collection("usuarios").doc(user.uid).collection("estoque").doc(prodId).delete()
-    .catch(err => { showToast("Erro: " + err.message, "error"); return; });
-  showToast("Produto removido.");
-}
-
-// ===== RESUMO ESTOQUE =====
-function atualizarResumoEstoque() {
-  const investimento = estoque.reduce((a, b) => a + (b.qtdInicial * b.precoCompra), 0);
-  const lucroPot = estoque.reduce((a, b) => a + (b.qtdInicial * (b.precoVenda - b.precoCompra)), 0);
-  const lucroMensalProdutos = estoque.reduce((a, b) => a + (b.vendasMensais * (b.precoVenda - b.precoCompra)), 0);
-  const despesasMensais = despesas.filter(d => d.mensal).reduce((a, b) => a + b.valor, 0);
-  const lucroMensal = lucroMensalProdutos - despesasMensais;
-
-  document.getElementById("investimentoTotal").innerText = investimento.toFixed(2) + " MT";
-  document.getElementById("lucroPotencial").innerText = lucroPot.toFixed(2) + " MT";
-  document.getElementById("lucroMensal").innerText = lucroMensal.toFixed(2) + " MT";
-}
-
-// ===== HISTÓRICO =====
-function abrirEstoqueCompleto() { atualizarListaEstoqueCompleto(); mudarTela('estoqueCompleto', null); }
-function abrirHistoricoVendas() { atualizarHistoricoVendas(); mudarTela('historicoVendas', null); }
-function abrirHistoricoDespesas() { atualizarHistoricoDespesas(); mudarTela('historicoDespesas', null); }
-
-function atualizarHistoricoVendas() {
-  const container = document.getElementById("listaHistoricoVendas");
+function renderHistoricoVendas() {
+  const el = document.getElementById("listaHistoricoVendas");
   if (!vendas.length) {
-    container.innerHTML = '<div class="empty-state"><i class="fa fa-shopping-cart"></i>Sem vendas registadas</div>';
-    return;
+    el.innerHTML = '<div class="empty-state"><i class="fa fa-shopping-cart"></i>Sem vendas registadas</div>'; return;
   }
-  container.innerHTML = [...vendas].reverse().map(v => {
-    const tagClass = v.pagamento === "Fiado" ? (v.pago ? "tag-green" : "tag-red") : "tag-blue";
-    const tagText = v.pagamento === "Fiado" ? (v.pago ? "Pago" : "Pendente") : v.pagamento;
+  el.innerHTML = vendas.map(v => {
+    const tc = v.pagamento === "Fiado" ? (v.pago ? "tag-green" : "tag-red") : "tag-blue";
+    const tt = v.pagamento === "Fiado" ? (v.pago ? "Pago"      : "Pendente") : v.pagamento;
     return `<div class="list-item">
       <div class="list-meta">
         <span class="list-name">${v.produto}</span>
-        <span class="list-value">${Number(v.valor).toFixed(2)} MT</span>
+        <span class="list-value">${fmt(v.valor)}</span>
       </div>
-      <div class="list-sub">${v.data || "—"} &nbsp;·&nbsp; <span class="tag ${tagClass}">${tagText}</span></div>
-      ${v.devedor ? `<div class="list-sub" style="margin-top:4px;">👤 ${v.devedor.nome} · ${v.devedor.contato} · Prazo: ${v.devedor.dataPagamento}</div>` : ""}
+      <div class="list-sub">
+        ${v.data || "—"} &nbsp;·&nbsp;
+        <span class="tag ${tc}">${tt}</span>
+      </div>
+      ${v.devedor ? `<div class="list-sub" style="margin-top:4px;">
+        👤 ${v.devedor.nome} · ${v.devedor.contato} · Prazo: ${v.devedor.dataPagamento}
+      </div>` : ""}
     </div>`;
   }).join("");
 }
 
-function atualizarHistoricoDespesas() {
-  const container = document.getElementById("listaHistoricoDespesas");
+function renderHistoricoDespesas() {
+  const el = document.getElementById("listaHistoricoDespesas");
   if (!despesas.length) {
-    container.innerHTML = '<div class="empty-state"><i class="fa fa-receipt"></i>Sem despesas registadas</div>';
-    return;
+    el.innerHTML = '<div class="empty-state"><i class="fa fa-receipt"></i>Sem despesas registadas</div>'; return;
   }
-  container.innerHTML = [...despesas].reverse().map(d => `
+  el.innerHTML = despesas.map(d => `
     <div class="list-item">
       <div class="list-meta">
         <span class="list-name">${d.tipo}</span>
-        <span class="list-value" style="color:var(--red)">${Number(d.valor).toFixed(2)} MT</span>
+        <span class="list-value" style="color:var(--red)">${fmt(d.valor)}</span>
       </div>
       <div class="list-sub">
         ${d.data || "—"} &nbsp;·&nbsp;
-        ${d.mensal ? '<span class="tag tag-orange">Mensal</span>' : '<span class="tag tag-blue">Única</span>'}
+        ${d.mensal
+          ? '<span class="tag tag-orange">Mensal</span>'
+          : '<span class="tag tag-blue">Única</span>'}
       </div>
     </div>`).join("");
 }
 
-// ===== REGISTRAR VENDA =====
-function registrarVenda() {
-  const produtoNome = document.getElementById("produto").value.trim();
-  const valor = parseFloat(document.getElementById("valorVenda").value);
-  const pagamento = document.getElementById("pagamento").value;
-  const hoje = new Date().toISOString().split("T")[0];
+// ─────────────────────────────────────────────
+// NAVEGAÇÃO
+// ─────────────────────────────────────────────
+const SCREENS = ["dashboard","vendas","despesas","fiado","estoque","definicoes",
+                 "estoqueCompleto","historicoVendas","historicoDespesas"];
 
-  if (!produtoNome || isNaN(valor) || valor <= 0) {
-    showToast("Preencha todos os campos!", "error"); return;
-  }
-
-  // Busca custo no estoque (case insensitive)
-  const itemEstoque = estoque.find(p => p.nome.toLowerCase() === produtoNome.toLowerCase());
-  const custo = itemEstoque ? itemEstoque.precoCompra : 0;
-
-  const venda = { produto: produtoNome, valor, custo, pagamento, pago: true, data: hoje };
-
-  if (pagamento === "Fiado") {
-    const nomeDevedor = document.getElementById("nomeDevedor").value.trim();
-    const contatoDevedor = document.getElementById("contatoDevedor").value.trim();
-    const dataPagamento = document.getElementById("dataPagamento").value;
-    if (!nomeDevedor || !contatoDevedor || !dataPagamento) {
-      showToast("Preencha os dados do fiado!", "error"); return;
-    }
-    venda.pago = false;
-    venda.devedor = { nome: nomeDevedor, contato: contatoDevedor, dataPagamento };
-  }
-
-  const user = auth.currentUser;
-  const ref = db.collection("usuarios").doc(user.uid).collection("vendas").doc();
-  venda.id = ref.id;
-
-  ref.set(venda).then(() => {
-    // Desconta do estoque (só se não for fiado, ou se fiado já pago)
-    if (itemEstoque && (pagamento !== "Fiado" || venda.pago)) {
-      itemEstoque.qtd = Math.max(0, itemEstoque.qtd - 1);
-      db.collection("usuarios").doc(user.uid).collection("estoque").doc(itemEstoque.id).update({ qtd: itemEstoque.qtd });
-    }
-
-    // Limpar campos
-    document.getElementById("produto").value = "";
-    document.getElementById("valorVenda").value = "";
-    document.getElementById("pagamento").value = "Dinheiro";
-    document.getElementById("fiadoExtra").classList.add("hidden");
-    ["nomeDevedor", "contatoDevedor", "dataPagamento"].forEach(id => { document.getElementById(id).value = ""; });
-
-    showToast("✓ Venda registada com sucesso!");
-  }).catch(err => showToast("Erro: " + err.message, "error"));
-}
-
-// ===== REGISTRAR DESPESA =====
-function registrarDespesa() {
-  const tipo = document.getElementById("tipoDespesa").value.trim();
-  const valor = parseFloat(document.getElementById("valorDespesa").value);
-  const mensal = document.getElementById("mensalDespesa").checked;
-  const hoje = new Date().toISOString().split("T")[0];
-
-  if (!tipo || isNaN(valor) || valor <= 0) {
-    showToast("Preencha todos os campos!", "error"); return;
-  }
-
-  const despesa = { tipo, valor, mensal, data: hoje };
-  const user = auth.currentUser;
-
-  db.collection("usuarios").doc(user.uid).collection("despesas").add(despesa).then(() => {
-    document.getElementById("tipoDespesa").value = "";
-    document.getElementById("valorDespesa").value = "";
-    document.getElementById("mensalDespesa").checked = false;
-    showToast("✓ Despesa registada!");
-  }).catch(err => showToast("Erro: " + err.message, "error"));
-}
-
-// ===== ATUALIZAR LISTA FIADO =====
-function atualizarListaFiado() {
-  const pendentes = vendas.filter(v => v.pagamento === "Fiado" && !v.pago);
-  const listaFiado = document.getElementById("listaFiado");
-
-  if (!pendentes.length) {
-    listaFiado.innerHTML = '<div class="empty-state"><i class="fa fa-check-circle"></i>Sem fiados pendentes</div>';
-  } else {
-    listaFiado.innerHTML = pendentes.map(f => `
-      <div class="fiado-card">
-        <div class="fiado-header">
-          <div>
-            <div class="fiado-name">👤 ${f.devedor.nome}</div>
-            <div class="list-sub">${f.produto} · ${f.devedor.contato}</div>
-          </div>
-          <div class="fiado-amount">${Number(f.valor).toFixed(2)} MT</div>
-        </div>
-        <div class="fiado-details">📅 Prazo: ${f.devedor.dataPagamento} &nbsp;·&nbsp; Data venda: ${f.data || "—"}</div>
-        <div class="fiado-actions">
-          <button class="btn btn-success btn-sm" onclick="marcarComoPago('${f.id}')">
-            <i class="fa fa-check"></i> Marcar Pago
-          </button>
-        </div>
-      </div>`).join("");
-  }
-
-  // Atualiza resumo no dashboard
-  const dashResumo = document.getElementById("dashFiadoResumo");
-  if (!pendentes.length) {
-    dashResumo.innerHTML = '<div class="empty-state" style="padding:14px 0;"><i class="fa fa-check-circle" style="font-size:20px;"></i>Nenhum fiado pendente</div>';
-  } else {
-    const totalFiado = pendentes.reduce((a, b) => a + Number(b.valor), 0);
-    dashResumo.innerHTML = `
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;">
-        <span style="font-size:13px;color:var(--muted2);">${pendentes.length} fiado(s) pendente(s)</span>
-        <span style="font-family:var(--font-display);font-weight:800;color:var(--red);font-size:15px;">${totalFiado.toFixed(2)} MT</span>
-      </div>
-      <button class="btn btn-ghost" style="margin-top:6px;" onclick="mudarTela('fiado', document.getElementById('navFiado'))">
-        <i class="fa fa-arrow-right"></i> Ver Fiados
-      </button>`;
-  }
-}
-
-// ===== RESUMO DASHBOARD =====
-function atualizarResumo() {
-  const hoje = new Date().toISOString().split("T")[0];
-
-  // Vendas hoje (excluindo fiado não pago)
-  const vendasHoje = vendas.filter(v => v.data === hoje && (v.pagamento !== "Fiado" || v.pago));
-  const totalVendasHoje = vendasHoje.reduce((a, b) => a + Number(b.valor), 0);
-
-  // Lucro hoje = receita - custo dos produtos vendidos
-  const lucroHoje = vendasHoje.reduce((total, v) => total + (Number(v.valor) - (Number(v.custo) || 0)), 0);
-
-  // Despesas hoje (apenas despesas únicas do dia)
-  const despesasHoje = despesas.filter(d => d.data === hoje && !d.mensal);
-  const totalDespesasHoje = despesasHoje.reduce((a, b) => a + Number(b.valor), 0);
-
-  // Lucro líquido do dia
-  const lucroLiquido = lucroHoje - totalDespesasHoje;
-
-  document.getElementById("totalVendas").innerText = totalVendasHoje.toFixed(2) + " MT";
-  document.getElementById("totalDespesas").innerText = totalDespesasHoje.toFixed(2) + " MT";
-  document.getElementById("lucro").innerText = lucroLiquido.toFixed(2) + " MT";
-  document.getElementById("lucro").closest(".box").style.background =
-    lucroLiquido < 0 ? "linear-gradient(135deg, #7f1d1d, #dc2626)" : "linear-gradient(135deg, #064e3b, #059669)";
-
-  atualizarLucroMensal();
-  calcularLucroMensalReal();
-  atualizarResumoEstoque();
-}
-
-function atualizarLucroMensal() {
-  const lucroMensalProdutos = estoque.reduce((a, b) => a + (b.vendasMensais * (b.precoVenda - b.precoCompra)), 0);
-  const despesasMensais = despesas.filter(d => d.mensal).reduce((a, b) => a + Number(b.valor), 0);
-  document.getElementById("lucroMensalTotal").innerText = (lucroMensalProdutos - despesasMensais).toFixed(2) + " MT";
-}
-
-function calcularLucroMensalReal() {
-  const agora = new Date();
-  const vendasMes = vendas.filter(v => {
-    if (!v.data) return false;
-    const d = new Date(v.data);
-    return d.getMonth() === agora.getMonth()
-      && d.getFullYear() === agora.getFullYear()
-      && (v.pagamento !== "Fiado" || v.pago);
-  });
-  const lucroMes = vendasMes.reduce((total, v) => total + (Number(v.valor) - (Number(v.custo) || 0)), 0);
-  document.getElementById("lucroMesReal").innerText = lucroMes.toFixed(2) + " MT";
-}
-
-// ===== MARCAR FIADO COMO PAGO =====
-async function marcarComoPago(id) {
-  const user = auth.currentUser;
-  if (!user) return;
-
-  // Busca a venda para descontar estoque
-  const venda = vendas.find(v => v.id === id);
-
-  await db.collection("usuarios").doc(user.uid).collection("vendas").doc(id)
-    .update({ pago: true })
-    .catch(err => { showToast("Erro: " + err.message, "error"); return; });
-
-  // Desconta do estoque ao confirmar pagamento
-  if (venda) {
-    const itemEstoque = estoque.find(p => p.nome.toLowerCase() === venda.produto.toLowerCase());
-    if (itemEstoque) {
-      itemEstoque.qtd = Math.max(0, itemEstoque.qtd - 1);
-      db.collection("usuarios").doc(user.uid).collection("estoque").doc(itemEstoque.id).update({ qtd: itemEstoque.qtd });
-    }
-  }
-
-  showToast("✓ Fiado marcado como pago!");
-}
-
-// ===== PERFIL =====
-function salvarPerfil() {
-  const user = auth.currentUser;
-  perfil.nome = document.getElementById("nomeUsuario").value.trim() || perfil.nome;
-  perfil.negocio = document.getElementById("nomeNegocio").value.trim() || perfil.negocio;
-  perfil.email = document.getElementById("emailNegocio").value.trim() || perfil.email;
-
-  db.collection("usuarios").doc(user.uid).set({ perfil }, { merge: true })
-    .then(() => { atualizarSaudacao(); showToast("✓ Perfil guardado!"); })
-    .catch(err => showToast("Erro: " + err.message, "error"));
-}
-
-function atualizarSaudacao() {
-  document.getElementById("saudacao").innerHTML = `Olá, ${perfil.nome} <span>👋</span>`;
-  document.getElementById("subtituloNegocio").textContent = perfil.negocio || "Controle total do seu negócio";
-}
-
-// ===== NAVEGAÇÃO =====
-const SCREENS = ['dashboard', 'vendas', 'despesas', 'fiado', 'estoque', 'definicoes', 'estoqueCompleto', 'historicoVendas', 'historicoDespesas'];
 function mudarTela(tela, btn) {
-  SCREENS.forEach(id => { const el = document.getElementById(id); if (el) el.classList.add("hidden"); });
-  const target = document.getElementById(tela);
-  if (target) target.classList.remove("hidden");
+  SCREENS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.add("hidden");
+  });
+  document.getElementById(tela).classList.remove("hidden");
   document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
   if (btn) btn.classList.add("active");
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// ===== CARREGAR DADOS (realtime) =====
-function carregarDados(uid) {
-  return new Promise(resolve => {
-    const userRef = db.collection("usuarios").doc(uid);
-    let vendasLoaded = false, despesasLoaded = false, estoqueLoaded = false;
-
-    function checkAllLoaded() {
-      if (vendasLoaded && despesasLoaded && estoqueLoaded) {
-        clearTimeout(timeoutSeguranca);
-        resolve();
-      }
-    }
-
-    // Timeout de segurança — se Firestore demorar +8s, abre o app mesmo assim
-    const timeoutSeguranca = setTimeout(() => {
-      if (!vendasLoaded) { vendasLoaded = true; }
-      if (!despesasLoaded) { despesasLoaded = true; }
-      if (!estoqueLoaded) { estoqueLoaded = true; }
-      resolve();
-    }, 8000);
-
-    // Vendas — tempo real
-    unsubVendas = userRef.collection("vendas").orderBy("data", "asc").onSnapshot(snapshot => {
-      vendas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      atualizarResumo();
-      atualizarListaFiado();
-      if (!vendasLoaded) { vendasLoaded = true; checkAllLoaded(); }
-    }, () => { vendasLoaded = true; checkAllLoaded(); });
-
-    // Despesas — tempo real
-    unsubDespesas = userRef.collection("despesas").onSnapshot(snapshot => {
-      despesas = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      atualizarResumo();
-      if (!despesasLoaded) { despesasLoaded = true; checkAllLoaded(); }
-    }, () => { despesasLoaded = true; checkAllLoaded(); });
-
-    // Estoque — tempo real
-    unsubEstoque = userRef.collection("estoque").onSnapshot(snapshot => {
-      estoque = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      atualizarResumoEstoque();
-      atualizarSugestoesProdutos();
-      if (!estoqueLoaded) { estoqueLoaded = true; checkAllLoaded(); }
-    }, () => { estoqueLoaded = true; checkAllLoaded(); });
-
-    // Perfil
-    userRef.get().then(doc => {
-      if (doc.exists && doc.data().perfil) {
-        perfil = doc.data().perfil;
-        atualizarSaudacao();
-        inicializarPerfil();
-      }
-    });
-  });
-}
-
-function inicializarPerfil() {
-  document.getElementById("nomeUsuario").value = perfil.nome || "";
-  document.getElementById("nomeNegocio").value = perfil.negocio || "";
-  document.getElementById("emailNegocio").value = perfil.email || "";
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 </script>
 </body>
 </html>
-

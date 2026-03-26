@@ -171,6 +171,23 @@ button { font-family:var(--font-body); }
 @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
 .container > div:not(.hidden) { animation:fadeUp 0.25s ease; }
 
+/* ── Autocomplete sugestões ── */
+.sugestao-item {
+  padding:11px 16px;
+  font-size:13px;
+  color:var(--text);
+  cursor:pointer;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid var(--border);
+  transition:background 0.15s;
+}
+.sugestao-item:last-child { border-bottom:none; }
+.sugestao-item:hover, .sugestao-item:active { background:rgba(249,115,22,0.08); }
+.sugestao-item .s-qty { font-size:11px; color:var(--muted); margin-left:8px; }
+.sugestao-item .s-price { font-family:var(--font-display); font-size:13px; color:var(--accent); font-weight:700; }
+
 /* ── Toast ── */
 #toast {
   position:fixed; bottom:100px; left:50%; transform:translateX(-50%) translateY(20px);
@@ -237,22 +254,48 @@ button { font-family:var(--font-body); }
     <h3><i class="fa fa-plus" style="color:var(--accent);margin-right:8px;"></i>Nova Venda</h3>
     <div class="form-group">
       <label>Produto</label>
-      <input type="text" id="produto" placeholder="Nome do produto">
+      <input type="text" id="produto" placeholder="Nome do produto" oninput="onProdutoInput()" autocomplete="off">
+      <!-- Sugestões de autocomplete -->
+      <div id="produtoSugestoes" style="display:none;position:relative;z-index:20;margin-top:4px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;overflow:hidden;"></div>
+    </div>
+    <!-- Info do produto encontrado no estoque -->
+    <div id="produtoInfo" style="display:none;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:12px;padding:12px 14px;margin-bottom:12px;font-size:13px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="color:var(--muted2);">📦 Em estoque</span>
+        <span id="produtoQtdInfo" style="font-family:var(--font-display);font-weight:700;color:var(--green);font-size:15px;"></span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:6px;">
+        <span style="color:var(--muted2);">💰 Preço sugerido</span>
+        <span id="produtoPrecoInfo" style="font-family:var(--font-display);font-weight:700;color:var(--accent);font-size:15px;"></span>
+      </div>
+    </div>
+    <!-- Alerta de estoque esgotado -->
+    <div id="produtoSemStock" style="display:none;background:rgba(244,63,94,0.08);border:1px solid rgba(244,63,94,0.2);border-radius:12px;padding:10px 14px;margin-bottom:12px;font-size:12px;color:var(--red);">
+      ⚠️ Produto com estoque esgotado ou não encontrado no inventário.
     </div>
     <div class="form-row">
       <div class="form-group">
-        <label>Valor (MT)</label>
-        <input type="number" id="valorVenda" placeholder="0.00" min="0" step="0.01">
+        <label>Quantidade</label>
+        <input type="number" id="qtdVenda" placeholder="1" min="1" value="1" oninput="onQtdInput()">
       </div>
       <div class="form-group">
-        <label>Pagamento</label>
-        <select id="pagamento" onchange="toggleFiado()">
-          <option value="Dinheiro">💵 Dinheiro</option>
-          <option value="M-Pesa">📱 M-Pesa</option>
-          <option value="Emola">📲 Emola</option>
-          <option value="Fiado">📋 Fiado</option>
-        </select>
+        <label>Valor unitário (MT)</label>
+        <input type="number" id="valorVenda" placeholder="0.00" min="0" step="0.01" oninput="onValorInput()">
       </div>
+    </div>
+    <!-- Total calculado -->
+    <div id="totalVendaInfo" style="display:none;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:11px 16px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;">
+      <span style="font-size:12px;color:var(--muted2);">Total da venda</span>
+      <span id="totalVendaValor" style="font-family:var(--font-display);font-weight:800;font-size:17px;color:var(--accent);"></span>
+    </div>
+    <div class="form-group">
+      <label>Pagamento</label>
+      <select id="pagamento" onchange="toggleFiado()">
+        <option value="Dinheiro">💵 Dinheiro</option>
+        <option value="M-Pesa">📱 M-Pesa</option>
+        <option value="Emola">📲 Emola</option>
+        <option value="Fiado">📋 Fiado</option>
+      </select>
     </div>
     <div id="fiadoExtra" class="fiado-extra hidden">
       <div class="section-divider"></div>
@@ -592,14 +635,107 @@ function atualizarResumoEstoque(){
 function toggleFiado(){
   document.getElementById("fiadoExtra").classList.toggle("hidden",document.getElementById("pagamento").value!=="Fiado");
 }
+
+// Recalcula o total mostrado (qtd × preço unitário)
+function recalcularTotal(){
+  const qty=parseInt(document.getElementById("qtdVenda").value)||1;
+  const preco=parseFloat(document.getElementById("valorVenda").value)||0;
+  const totalDiv=document.getElementById("totalVendaInfo");
+  if(preco>0 && qty>0){
+    totalDiv.style.display="flex";
+    document.getElementById("totalVendaValor").textContent=`${(qty*preco).toFixed(2)} MT`;
+  } else {
+    totalDiv.style.display="none";
+  }
+}
+function onQtdInput(){ recalcularTotal(); }
+function onValorInput(){ recalcularTotal(); }
+
+// Autocomplete + info do produto ao digitar
+function onProdutoInput(){
+  const val=document.getElementById("produto").value.trim().toLowerCase();
+  const sugestoes=document.getElementById("produtoSugestoes");
+  const info=document.getElementById("produtoInfo");
+  const semStock=document.getElementById("produtoSemStock");
+
+  if(!val){
+    sugestoes.style.display="none";
+    info.style.display="none";
+    semStock.style.display="none";
+    return;
+  }
+
+  const matches=estoque.filter(p=>p.nome.toLowerCase().includes(val));
+
+  if(matches.length>0 && !(matches.length===1 && matches[0].nome.toLowerCase()===val)){
+    sugestoes.style.display="block";
+    sugestoes.innerHTML=matches.slice(0,5).map(p=>`
+      <div class="sugestao-item" onclick="selecionarProduto('${p.nome.replace(/'/g,"\'")}')">
+        <span>${p.nome} <span class="s-qty">(${p.qtd??0} unid.)</span></span>
+        <span class="s-price">${n(p.precoVenda).toFixed(2)} MT</span>
+      </div>`).join("");
+  } else {
+    sugestoes.style.display="none";
+  }
+
+  const exact=estoque.find(p=>p.nome.toLowerCase()===val);
+  if(exact){
+    sugestoes.style.display="none";
+    if(n(exact.qtd)>0){
+      info.style.display="block";
+      semStock.style.display="none";
+      document.getElementById("produtoQtdInfo").textContent=`${exact.qtd} unidades disponíveis`;
+      document.getElementById("produtoPrecoInfo").textContent=`${n(exact.precoVenda).toFixed(2)} MT`;
+      // Preenche preço unitário e recalcula total
+      document.getElementById("valorVenda").value=n(exact.precoVenda).toFixed(2);
+      recalcularTotal();
+    } else {
+      info.style.display="none";
+      semStock.style.display="block";
+    }
+  } else if(!matches.length){
+    info.style.display="none";
+    semStock.style.display="none";
+  }
+}
+
+function selecionarProduto(nome){
+  document.getElementById("produto").value=nome;
+  document.getElementById("produtoSugestoes").style.display="none";
+  onProdutoInput();
+}
+
 async function registrarVenda(){
   const prod=document.getElementById("produto").value.trim();
-  const val=parseFloat(document.getElementById("valorVenda").value);
+  const precoUnit=parseFloat(document.getElementById("valorVenda").value);
+  const qty=Math.max(1, parseInt(document.getElementById("qtdVenda").value)||1);
   const pag=document.getElementById("pagamento").value;
+
   if(!prod){showToast("Informe o nome do produto.","error");return;}
-  if(!val||val<=0){showToast("Informe um valor válido.","error");return;}
+  if(!precoUnit||precoUnit<=0){showToast("Informe um valor válido.","error");return;}
+
+  const valorTotal=precoUnit*qty;
+
+  // Busca produto no estoque
   const item=estoque.find(p=>p.nome.toLowerCase()===prod.toLowerCase());
-  const venda={produto:prod,valor:val,custo:item?n(item.precoCompra):0,pagamento:pag,pago:true,data:dataHoje()};
+
+  // Verifica se tem stock suficiente
+  if(item && n(item.qtd)<qty){
+    showToast(`Stock insuficiente. Disponível: ${n(item.qtd)} unid.`,"error");
+    return;
+  }
+
+  const venda={
+    produto:prod,
+    quantidade:qty,
+    valorUnit:precoUnit,
+    valor:valorTotal,           // total gravado
+    custo:item?n(item.precoCompra)*qty:0,
+    pagamento:pag,
+    pago:true,
+    data:dataHoje()
+  };
+
   if(pag==="Fiado"){
     const nome=document.getElementById("nomeDevedor").value.trim();
     const contato=document.getElementById("contatoDevedor").value.trim();
@@ -607,21 +743,33 @@ async function registrarVenda(){
     if(!nome||!contato||!prazo){showToast("Preencha os dados do fiado.","error");return;}
     venda.pago=false;venda.devedor={nome,contato,dataPagamento:prazo};
   }
-  // Limpa e dá feedback IMEDIATAMENTE
+
+  // Limpa formulário e dá feedback imediatamente
   ["produto","valorVenda","nomeDevedor","contatoDevedor","dataPagamento"].forEach(id=>{document.getElementById(id).value="";});
+  document.getElementById("qtdVenda").value="1";
   document.getElementById("pagamento").value="Dinheiro";
   document.getElementById("fiadoExtra").classList.add("hidden");
+  document.getElementById("produtoInfo").style.display="none";
+  document.getElementById("produtoSemStock").style.display="none";
+  document.getElementById("produtoSugestoes").style.display="none";
+  document.getElementById("totalVendaInfo").style.display="none";
   showSuccess("Venda registada com sucesso!","btnRegistrarVenda");
 
-  // Grava em background
-  db.collection("usuarios").doc(UID).collection("vendas").add(venda)
-    .then(()=>{
-      if(item&&venda.pago){
-        db.collection("usuarios").doc(UID).collection("estoque").doc(item.id)
-          .update({qtd:Math.max(0,n(item.qtd)-1)}).catch(console.error);
-      }
-    })
-    .catch(e=>{ console.error("venda add:",e); showToast("Erro ao guardar no servidor.","error"); });
+  // Grava venda e desconta estoque com await para garantir execução
+  try {
+    await db.collection("usuarios").doc(UID).collection("vendas").add(venda);
+    // Desconta estoque imediatamente após gravar a venda
+    if(item && venda.pago){
+      const novaQtd = Math.max(0, n(item.qtd) - qty);
+      await db.collection("usuarios").doc(UID).collection("estoque")
+        .doc(item.id).update({ qtd: novaQtd });
+      // Actualiza o array local para reflectir imediatamente sem esperar snapshot
+      item.qtd = novaQtd;
+    }
+  } catch(e){
+    console.error("registrarVenda erro:", e);
+    showToast("Erro ao guardar no servidor.","error");
+  }
 }
 
 // ── DESPESAS ────────────────────────────────────
@@ -660,17 +808,21 @@ function renderFiados(){
       </div>
       <div class="fiado-details">📅 Prazo: ${f.devedor.dataPagamento}</div>
       <div class="fiado-actions">
-        <button class="btn btn-success btn-sm" onclick="marcarComoPago('${f.id}','${f.produto}')">
+        <button class="btn btn-success btn-sm" onclick="marcarComoPago('${f.id}','${f.produto}',${f.quantidade||1})">
           <i class="fa fa-check"></i> Marcar como Pago
         </button>
       </div>
     </div>`).join("");
 }
-async function marcarComoPago(id,prod){
+async function marcarComoPago(id,prod,qty){
   try{
     await db.collection("usuarios").doc(UID).collection("vendas").doc(id).update({pago:true});
     const item=estoque.find(p=>p.nome.toLowerCase()===prod.toLowerCase());
-    if(item)await db.collection("usuarios").doc(UID).collection("estoque").doc(item.id).update({qtd:Math.max(0,n(item.qtd)-1)});
+    if(item){
+      const qtdVendida=parseInt(qty)||1;
+      await db.collection("usuarios").doc(UID).collection("estoque")
+        .doc(item.id).update({qtd:Math.max(0,n(item.qtd)-qtdVendida)});
+    }
     showSuccess("Fiado marcado como pago!",null);
   }catch(e){showToast("Erro ao actualizar.","error");}
 }
@@ -765,9 +917,10 @@ function renderHistoricoVendas(){
   el.innerHTML=vendas.map(v=>{
     const tc=v.pagamento==="Fiado"?(v.pago?"tag-green":"tag-red"):"tag-blue";
     const tt=v.pagamento==="Fiado"?(v.pago?"Pago":"Pendente"):v.pagamento;
+    const qtyBadge=(v.quantidade&&v.quantidade>1)?` <span style="font-size:11px;color:var(--muted)">×${v.quantidade}</span>`:"";
     return`<div class="list-item">
       <div class="list-meta">
-        <span class="list-name">${v.produto}</span>
+        <span class="list-name">${v.produto}${qtyBadge}</span>
         <span class="list-value">${fmt(v.valor)}</span>
       </div>
       <div class="list-sub">${v.data||"—"} &nbsp;·&nbsp; <span class="tag ${tc}">${tt}</span></div>

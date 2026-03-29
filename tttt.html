@@ -495,8 +495,11 @@ let unsubV=null,unsubD=null,unsubE=null;
 
 // ── AUTH GUARD ──────────────────────────────────
 auth.onAuthStateChanged(async user=>{
-  if(!user){window.location.replace("index.html");return;}
-  UID=user.uid;
+  if(!user){
+    window.location.replace("index.html");
+    return;
+  }
+  UID = user.uid;
   document.body.classList.add("ready");
   await carregarPerfil();
   iniciarListeners();
@@ -516,7 +519,8 @@ function showToast(msg,type="success"){
   t.innerHTML=msg;
   t.className="show "+type;
   clearTimeout(t._t);
-  t._t=setTimeout(()=>{t.className="";},2800);
+  // Erros ficam visíveis mais tempo
+  t._t=setTimeout(()=>{t.className="";}, type==="error" ? 6000 : 2800);
 }
 
 // ── FEEDBACK VISUAL DE SUCESSO ──────────────────
@@ -578,24 +582,33 @@ async function salvarPerfil(){
 async function terminarSessao(){await auth.signOut();window.location.replace("index.html");}
 
 // ── LISTENERS ──────────────────────────────────
+function mostrarErroDB(e){
+  // Mostra o erro real no ecrã para diagnóstico
+  showToast("DB erro: " + (e.code||e.message||JSON.stringify(e)), "error");
+  console.error("Firestore erro:", e);
+}
+
 function iniciarListeners(){
   if(unsubV)unsubV();if(unsubD)unsubD();if(unsubE)unsubE();
   const base=db.collection("usuarios").doc(UID);
+
   unsubV=base.collection("vendas").onSnapshot(snap=>{
     vendas=snap.docs.map(d=>({id:d.id,...d.data()}));
     vendas.sort((a,b)=>(b.data||"").localeCompare(a.data||""));
     atualizarDashboard();renderFiados();
-  },e=>console.error("vendas:",e));
+  }, mostrarErroDB);
+
   unsubD=base.collection("despesas").onSnapshot(snap=>{
     despesas=snap.docs.map(d=>({id:d.id,...d.data()}));
     despesas.sort((a,b)=>(b.data||"").localeCompare(a.data||""));
     atualizarDashboard();atualizarResumoEstoque();
-  },e=>console.error("despesas:",e));
+  }, mostrarErroDB);
+
   unsubE=base.collection("estoque").onSnapshot(snap=>{
     estoque=snap.docs.map(d=>({id:d.id,...d.data()}));
     estoque.sort((a,b)=>(a.nome||"").localeCompare(b.nome||""));
     atualizarResumoEstoque();
-  },e=>console.error("estoque:",e));
+  }, mostrarErroDB);
 }
 
 // ── DASHBOARD ───────────────────────────────────
@@ -744,31 +757,40 @@ async function registrarVenda(){
     venda.pago=false;venda.devedor={nome,contato,dataPagamento:prazo};
   }
 
-  // Limpa formulário e dá feedback imediatamente
-  ["produto","valorVenda","nomeDevedor","contatoDevedor","dataPagamento"].forEach(id=>{document.getElementById(id).value="";});
-  document.getElementById("qtdVenda").value="1";
-  document.getElementById("pagamento").value="Dinheiro";
-  document.getElementById("fiadoExtra").classList.add("hidden");
-  document.getElementById("produtoInfo").style.display="none";
-  document.getElementById("produtoSemStock").style.display="none";
-  document.getElementById("produtoSugestoes").style.display="none";
-  document.getElementById("totalVendaInfo").style.display="none";
-  showSuccess("Venda registada com sucesso!","btnRegistrarVenda");
+  // Desactiva botão enquanto grava
+  const btnV = document.getElementById("btnRegistrarVenda");
+  btnV.disabled = true;
+  btnV.innerHTML = '<i class="fa fa-spinner fa-spin"></i> A guardar...';
 
-  // Grava venda e desconta estoque com await para garantir execução
   try {
+    // 1. Grava a venda no Firestore
     await db.collection("usuarios").doc(UID).collection("vendas").add(venda);
-    // Desconta estoque imediatamente após gravar a venda
+
+    // 2. Desconta estoque logo após confirmar gravação
     if(item && venda.pago){
       const novaQtd = Math.max(0, n(item.qtd) - qty);
       await db.collection("usuarios").doc(UID).collection("estoque")
         .doc(item.id).update({ qtd: novaQtd });
-      // Actualiza o array local para reflectir imediatamente sem esperar snapshot
-      item.qtd = novaQtd;
+      item.qtd = novaQtd; // actualiza array local imediatamente
     }
+
+    // 3. Só agora limpa o formulário e mostra sucesso
+    ["produto","valorVenda","nomeDevedor","contatoDevedor","dataPagamento"]
+      .forEach(id=>{ document.getElementById(id).value=""; });
+    document.getElementById("qtdVenda").value = "1";
+    document.getElementById("pagamento").value = "Dinheiro";
+    document.getElementById("fiadoExtra").classList.add("hidden");
+    document.getElementById("produtoInfo").style.display = "none";
+    document.getElementById("produtoSemStock").style.display = "none";
+    document.getElementById("produtoSugestoes").style.display = "none";
+    document.getElementById("totalVendaInfo").style.display = "none";
+    showSuccess("Venda registada com sucesso!","btnRegistrarVenda");
+
   } catch(e){
     console.error("registrarVenda erro:", e);
-    showToast("Erro ao guardar no servidor.","error");
+    showToast("Erro: " + (e.message || e.code || "falha ao guardar"), "error");
+    btnV.disabled = false;
+    btnV.innerHTML = '<i class="fa fa-check"></i> Registrar Venda';
   }
 }
 
@@ -779,15 +801,26 @@ async function registrarDespesa(){
   const mensal=document.getElementById("mensalDespesa").checked;
   if(!tipo){showToast("Informe o tipo de despesa.","error");return;}
   if(!val||val<=0){showToast("Informe um valor válido.","error");return;}
-  // Limpa e dá feedback IMEDIATAMENTE
-  document.getElementById("tipoDespesa").value="";
-  document.getElementById("valorDespesa").value="";
-  document.getElementById("mensalDespesa").checked=false;
-  showSuccess("Despesa registada!","btnRegistrarDespesa");
 
-  // Grava em background
-  db.collection("usuarios").doc(UID).collection("despesas").add({tipo,valor:val,mensal,data:dataHoje()})
-    .catch(e=>{ console.error("despesa add:",e); showToast("Erro ao guardar no servidor.","error"); });
+  const btnD = document.getElementById("btnRegistrarDespesa");
+  btnD.disabled = true;
+  btnD.innerHTML = '<i class="fa fa-spinner fa-spin"></i> A guardar...';
+
+  try {
+    await db.collection("usuarios").doc(UID).collection("despesas")
+      .add({tipo, valor:val, mensal, data:dataHoje()});
+
+    document.getElementById("tipoDespesa").value = "";
+    document.getElementById("valorDespesa").value = "";
+    document.getElementById("mensalDespesa").checked = false;
+    showSuccess("Despesa registada!","btnRegistrarDespesa");
+
+  } catch(e){
+    console.error("registrarDespesa erro:", e);
+    showToast("Erro: " + (e.message || e.code || "falha ao guardar"), "error");
+    btnD.disabled = false;
+    btnD.innerHTML = '<i class="fa fa-check"></i> Registrar Despesa';
+  }
 }
 
 // ── FIADOS ──────────────────────────────────────
@@ -857,19 +890,32 @@ async function adicionarProduto(){
   const isCaixa=tipo==="caixa"||tipo==="fardo";
   const precoUni=isCaixa?precoC/qtdC:precoC;
   const totalU=isCaixa?qtdI*qtdC:qtdI;
-  // Limpa e dá feedback IMEDIATAMENTE (não espera Firestore)
-  ["nomeProduto","quantidadeCompra","quantidadePorCaixa","precoCompra","precoVenda","vendasMensais"].forEach(id=>{document.getElementById(id).value="";});
-  document.getElementById("tipoCompra").value="unidade";
-  toggleCaixaUnid();
-  showSuccess("Produto adicionado ao estoque!","btnAdicionarProduto");
+  const btn=document.getElementById("btnAdicionarProduto");
+  btn.disabled=true;
+  btn.innerHTML='<i class="fa fa-spinner fa-spin"></i> A guardar...';
 
-  // Grava no Firestore em background
-  db.collection("usuarios").doc(UID).collection("estoque").add({
-    nome,tipo,qtd:totalU,qtdInicial:totalU,precoCompra:precoUni,precoVenda:precoV,vendasMensais:vMens
-  }).catch(e=>{
-    console.error("estoque add:",e);
-    showToast("Erro ao guardar no servidor.","error");
-  });
+  try{
+    // Testa se UID está definido
+    if(!UID){ showToast("Sessão expirada. Faça login novamente.","error"); return; }
+
+    await db.collection("usuarios").doc(UID).collection("estoque").add({
+      nome, tipo, qtd:totalU, qtdInicial:totalU,
+      precoCompra:precoUni, precoVenda:precoV, vendasMensais:vMens
+    });
+
+    // Só limpa e mostra sucesso DEPOIS do Firestore confirmar
+    ["nomeProduto","quantidadeCompra","quantidadePorCaixa","precoCompra","precoVenda","vendasMensais"]
+      .forEach(id=>{ document.getElementById(id).value=""; });
+    document.getElementById("tipoCompra").value="unidade";
+    toggleCaixaUnid();
+    showSuccess("Produto adicionado ao estoque!","btnAdicionarProduto");
+
+  } catch(e){
+    console.error("adicionarProduto erro:", e);
+    showToast("Erro: " + (e.message||e.code||"falha ao guardar"), "error");
+    btn.disabled=false;
+    btn.innerHTML='<i class="fa fa-plus"></i> Adicionar ao Estoque';
+  }
 }
 
 async function removerProduto(docId){
